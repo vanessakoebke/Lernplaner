@@ -1,0 +1,1 @@
+Dieses Projekt soll einen Lernplaner in Java zur Verfügung stellen, über den Lerneinheiten erstellt und geplant werden können. Des Weiteren sollen PDFs hochgeladen werden können und der Stoff kapitelweise zum Lernen eingeplant werden.
