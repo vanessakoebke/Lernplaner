@@ -8,6 +8,10 @@ public class AufgabenManager {
         aufgabenListe = new ArrayList<Aufgabe>();
     }
     
+    public AufgabenManager(List<Aufgabe> aufgabenListe) {
+        this.aufgabenListe = aufgabenListe;
+    }
+    
     public void addAufgabe(Aufgabe aufgabe) {
         aufgabenListe.add(aufgabe);
     }

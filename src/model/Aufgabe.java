@@ -1,10 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 
-public class Aufgabe {
+public class Aufgabe implements Serializable {
     private int id;
     private String titel;
     private String beschreibung;

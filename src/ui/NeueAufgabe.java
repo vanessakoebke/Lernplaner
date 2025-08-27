@@ -8,41 +8,52 @@ import java.time.LocalDate;
 import java.time.format.*;
 import java.util.*;
 import model.*;
+import service.*;
 
 public class NeueAufgabe extends JFrame {
+    private EingabePanel eingabePanel;
+    private AufgabenManager aufgabenManager;
 
      
-    public NeueAufgabe(DefaultTableModel tabellenModell) {
+    public NeueAufgabe(DefaultTableModel tabellenModell, AufgabenManager aufgabenManager) {
         super("Neue Aufgabe");
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setSize(450, 300);
-        this.setLocationRelativeTo(null);
+        
 
-       
-        EingabePanel eingabePanel = new EingabePanel();
-        JPanel buttonPanel = new JPanel();
+       this.aufgabenManager = aufgabenManager;
+        this.eingabePanel = new EingabePanel();
+        
+        
+        //Abbrechen-Button
         JButton buttonAbbrechen = new JButton("Abbrechen");
         buttonAbbrechen.addActionListener(e -> {
             this.dispose();
         });
+        //Hinzufügen-Button
         JButton buttonHinzu = new JButton("Hinzufügen");
         buttonHinzu.addActionListener(e -> {
-            Aufgabe neue = eingabePanel.getAufgabe();
+            Aufgabe aufgabe = eingabePanel.getAufgabe();
             Object[] zeile = {
-                neue.getTitel(),
-                neue.getBeschreibung() != null ? neue.getBeschreibung() : "",
-                neue.getFaelligkeit() != null ? neue.getFaelligkeit().toString() : "",
-                neue.getStatus()
+                aufgabe.getTitel(),
+                aufgabe.getBeschreibung() != null ? aufgabe.getBeschreibung() : "",
+                aufgabe.getFaelligkeit() != null ? aufgabe.getFaelligkeit().toString() : "",
+                aufgabe.getStatus()
             };
             tabellenModell.addRow(zeile);
+            aufgabenManager.addAufgabe(aufgabe);
             this.dispose();});
-        buttonPanel.add(buttonAbbrechen);
+        
+      //Button-Panel
+        JPanel buttonPanel = new JPanel();
         buttonPanel.add(buttonHinzu);
+        buttonPanel.add(buttonAbbrechen);
+        
+        //Neue-Aufgabe-Fenster
         add(eingabePanel, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.SOUTH);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setSize(450, 300);
+        this.setLocationRelativeTo(null);
         setVisible(true);
     }
 
-  
-    
 }
