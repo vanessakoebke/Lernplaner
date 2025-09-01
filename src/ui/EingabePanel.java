@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 
 import javax.swing.*;
 
+import lang.I18n;
 import model.Aufgabe;
 
 public class EingabePanel extends JPanel {
@@ -37,7 +38,7 @@ public class EingabePanel extends JPanel {
     gbc.anchor = GridBagConstraints.NORTHWEST;
 
     // Label und Textfeld für Titel
-    JLabel titelLabel = new JLabel("Aufgabenname:");
+    JLabel titelLabel = new JLabel(I18n.t("ui.Common.Aufgabenname"));
     titelFeld = new JTextField(titel);
     titelFeld.setPreferredSize(new Dimension(200, 25)); // 1 Zeile hoch
     titelFeld.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
@@ -49,7 +50,7 @@ public class EingabePanel extends JPanel {
     this.add(titelFeld, gbc);
 
     // Label und Textbereich für Beschreibung
-    JLabel beschreibungLabel = new JLabel("Beschreibung:");
+    JLabel beschreibungLabel = new JLabel(I18n.t("ui.Common.Beschreibung"));
     beschreibungFeld = new JTextArea(beschreibung, 4, 20); // 4 Zeilen hoch
     beschreibungFeld.setLineWrap(true);
     beschreibungFeld.setWrapStyleWord(true);
@@ -64,8 +65,8 @@ public class EingabePanel extends JPanel {
     this.add(beschreibungScroll, gbc);
 
     // Label und Textfeld für Datum
-    JLabel datumLabel = new JLabel("Fällig am:");
-    datumFeld = (datum == null || datum.equals("")) ? new JTextField("TT.MM.JJJJ") : new JTextField(datum);
+    JLabel datumLabel = new JLabel(I18n.t("ui.Common.Faelligkeit"));
+    datumFeld = (datum == null || datum.equals("")) ? new JTextField(I18n.t("ui.EingabePanel.Datumsformat")) : new JTextField(datum);
     datumFeld.setPreferredSize(new Dimension(200, 25)); // 1 Zeile hoch
     datumFeld.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 
@@ -76,35 +77,36 @@ public class EingabePanel extends JPanel {
     this.add(datumFeld, gbc);
 
     // Prüfen beim Verlassen des Feldes
+    //Edit: deaktiviert, weil zu nervig wenn man das Feld anklickt und danach in ein anderes Feld springen will, wird bei getAufgabe eh geprüft
     
-    datumFeld.addFocusListener(new java.awt.event.FocusAdapter() {
-        @Override
-        public void focusLost(java.awt.event.FocusEvent e) {
-            String text = datumFeld.getText();
-            try {
-                LocalDate.parse(text, formatter);
-                // gültiges Datum
-            } catch (DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(null,
-                        "Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.",
-                        "Ungültiges Datum",
-                        JOptionPane.ERROR_MESSAGE);
-                datumFeld.requestFocus();
-            }
-        }});
+//    datumFeld.addFocusListener(new java.awt.event.FocusAdapter() {
+//        @Override
+//        public void focusLost(java.awt.event.FocusEvent e) {
+//            String text = datumFeld.getText();
+//            try {
+//                LocalDate.parse(text, formatter);
+//                // gültiges Datum
+//            } catch (DateTimeParseException ex) {
+//                JOptionPane.showMessageDialog(null,
+//                        "Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.",
+//                        "Ungültiges Datum",
+//                        JOptionPane.ERROR_MESSAGE);
+//                datumFeld.requestFocus();
+//            }
+//        }});
      
 }
     public Aufgabe getAufgabe() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate datum = null;
         String datumText = datumFeld.getText().trim();
-        if (!datumText.equals("") && !datumText.equals("TT.MM.JJJJ")) {
+        if (!datumText.equals("") && !datumText.equals(I18n.t("ui.EingabePanel.Datumsformat"))) {
             try {
                 datum = LocalDate.parse(datumText, formatter);
             } catch (DateTimeParseException e) {
                 JOptionPane.showMessageDialog(this,
-                    "Ungültiges Datum! Bitte im Format TT.MM.JJJJ eingeben.",
-                    "Fehler",
+                    I18n.t("Common.Erros.UngueltigesDatum"),
+                    I18n.t("Common.Errors.Fehler"),
                     JOptionPane.ERROR_MESSAGE);
                 datumFeld.requestFocus();
                 return null; // Abbruch, keine Aufgabe erzeugen

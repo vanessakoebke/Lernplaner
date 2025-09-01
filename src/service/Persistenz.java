@@ -3,6 +3,7 @@ package service;
 import com.google.gson.*;
 import com.google.gson.reflect.*;
 
+import lang.I18n;
 import model.*;
 import service.*;
 
@@ -26,8 +27,8 @@ public class Persistenz {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(
                     null, //zentriert
-                    "Speichern nicht möglich",  // Nachricht
-                    "Fehler",                   // Fenstertitel
+                    I18n.t("Common.Errors.SpeichernFehler"),  // Nachricht
+                    I18n.t("Common.Errors.Fehler"),                   // Fenstertitel
                     JOptionPane.ERROR_MESSAGE   // Icon-Typ
                 );
             e.printStackTrace();

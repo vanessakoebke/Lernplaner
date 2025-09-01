@@ -2,59 +2,92 @@ package ui;
 
 import model.*;
 import service.*;
+import lang.I18n;
+import util.*;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
+
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.util.List;
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        new File("data").mkdirs(); //Verzeichnis für Persistenz erzeugen
-        
-        Persistenz persistenz = new Persistenz(); //Speichermodell erzeugen
-        AufgabenManager aufgabenManager = new AufgabenManager(persistenz.laden()); // Aufgabenmanager erzeugen
-        
-        //Hauptfenster erzeugen
-        JFrame hauptfenster = new JFrame("Lernplaner");
+
+        // Verzeichnisse & Sprache
+        new File("data").mkdirs();
+        I18n.load("de");
+
+        Persistenz persistenz = new Persistenz();
+        AufgabenManager aufgabenManager = new AufgabenManager(persistenz.laden());
+
+        // TableModel
+        AufgabenAnsicht tableModel = new AufgabenAnsicht(aufgabenManager);
+
+        // JTable
+        JTable tabelle = new JTable(tableModel);
+        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
+
+        // Status-ComboBox
+        JComboBox<Status> statusCombo = new JComboBox<>(Status.values());
+        tabelle.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(statusCombo));
+
+     // Spalte "Bearbeiten"
+        EditButton editButton = new EditButton();
+        int spalte = 4; // Index der Spalte
+        tabelle.getColumnModel().getColumn(spalte)
+                .setCellRenderer(editButton.getRenderer());
+        tabelle.getColumnModel().getColumn(spalte)
+                .setCellEditor(editButton.getEditor(e -> {
+                    System.out.println("Das hat geklappt.");
+                }));
+
+        // Spaltenbreite anpassen
+        JButton tempButton = editButton.getButton();
+        int buttonBreite = tempButton.getPreferredSize().width + 60; // Puffer hinzufügen
+        TableColumn col = tabelle.getColumnModel().getColumn(spalte);
+        col.setPreferredWidth(buttonBreite);
+        col.setMaxWidth(buttonBreite);
+        col.setMinWidth(buttonBreite);
+
+
+
+        // Spalte "Löschen"
+        DeleteButton deleteButton = new DeleteButton(); 
+        tabelle.getColumnModel().getColumn(5).setCellRenderer(deleteButton.getRenderer());
+        tabelle.getColumnModel().getColumn(5).setCellEditor(deleteButton.getEditor(e -> {
+            int row = tabelle.getSelectedRow();
+            if (JOptionPane.showConfirmDialog(null, "Aufgabe wirklich löschen?") == JOptionPane.YES_OPTION) {
+                tableModel.removeAufgabe(row);
+            }
+        }));
+
+        JScrollPane scrollPane = new JScrollPane(tabelle);
+
+        // Hauptfenster
+        JFrame hauptfenster = new JFrame(I18n.t("ui.Main.FensterTitel"));
+        hauptfenster.setSize(800, 600);
+        hauptfenster.setLocationRelativeTo(null);
+        hauptfenster.setLayout(new BorderLayout());
+
         hauptfenster.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 persistenz.speichern(aufgabenManager.getAufgabenListe());
                 System.exit(0);
-                //hauptfenster.dispose(); -> evtl. in Zukunft verwenden, falls im Hintergrund noch Aktionen wie Timer o.ä. laufen sollen
             }
         });
-        hauptfenster.setSize(800, 600);
-        hauptfenster.setLocationRelativeTo(null);
-        
-        // 3️⃣ TableModel für die JTable vorbereiten
-        String[] spaltenTitel = { "Titel", "Beschreibung", "Fälligkeit", "Status" };
-        DefaultTableModel tabellenModell = new DefaultTableModel(spaltenTitel, 0); // 0 = Zeilenanzahl initial
-        // Aufgaben in TableModel einfügen
-        List<Aufgabe> aufgabenListe = aufgabenManager.getAufgabenListe();
-        for (Aufgabe a : aufgabenListe) {
-            Object[] zeile = { a.getTitel(), a.getBeschreibung() != null ? a.getBeschreibung() : "",
-                    a.getFaelligkeit() != null ? a.getFaelligkeit().toString() : "", a.getStatus() };
-            tabellenModell.addRow(zeile);
-        }
-        // 4️⃣ JTable erstellen
-        JTable aufgabenTabelle = new JTable(tabellenModell);
-        JScrollPane scrollPane = new JScrollPane(aufgabenTabelle);
-        
-        // 5️⃣ Button zum Hinzufügen von Aufgaben
-        JButton aufgabeHinzu = new JButton("Aufgabe hinzufügen");
-         aufgabeHinzu.addActionListener(e -> new NeueAufgabe(tabellenModell, aufgabenManager));
-             
-        
 
-        // 6️⃣ Layout
-        JPanel hauptPanel = new JPanel(new BorderLayout());
-        hauptPanel.add(scrollPane, BorderLayout.CENTER);
-        hauptPanel.add(aufgabeHinzu, BorderLayout.SOUTH);
-        hauptfenster.setContentPane(hauptPanel);
+        // Button neue Aufgabe
+        JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
+        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabe -> tableModel.addAufgabe(aufgabe)));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(buttonNeueAufgabe);
+
+        hauptfenster.add(scrollPane, BorderLayout.CENTER);
+        hauptfenster.add(buttonPanel, BorderLayout.SOUTH);
         hauptfenster.setVisible(true);
     }
 }

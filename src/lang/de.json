@@ -1,0 +1,35 @@
+{
+  "Common": {
+    "ButtonAbbrechen": "Abbrechen",
+    "ButtonHinzufuegen": "Hinzufügen",
+    "ButtonOk": "Ok",
+    "Errors": {
+      "Fehler": "Fehler",
+      "UngueltigesDatum": "Ungültiges Datum! Bitte ein Datum im Format TT.MM.JJJJ eingeben.",
+      "SpeichernFehler": "Speichern nicht möglich"
+    }
+  },
+  "ui": {
+    "Common": {
+      "Aufgabenname": "Aufgabenname",
+      "Beschreibung": "Beschreibung",
+      "Faelligkeit": "Fällig am",
+      "Status": "Status"
+    },
+    "Main": {
+      "FensterTitel": "Lernplaner",
+      "ButtonNeueAufgabe": "Aufgabe hinzufügen"
+    },
+    "NeueAufgabe": {
+      "FensterTitel": "Neue Aufgabe"
+    },
+    "EingabePanel": {
+      "Datumsformat": "TT.MM.JJJJ"
+    }
+  },
+  "model": {
+	"StatusNeu": "noch nicht begonnen",
+	"StatusAngefangen": "begonnen",
+	"StatusErledigt": "erledigt"
+  }
+}
