@@ -7,6 +7,7 @@
 - [ ] Aufgaben löschen [#4]
 - [ ] einfache Persistenz über JSON-Datei o.ä. [#5]
 - [ ] einfache GUI [#6]
+- [ ] Übersetzbarkeit implementieren [#7]
 
 
 ## Anforderungen mittelfristig
