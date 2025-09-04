@@ -8,27 +8,25 @@ import java.time.format.DateTimeParseException;
 import javax.swing.*;
 
 import lang.I18n;
-import model.Aufgabe;
+import model.*;
 
 public class EingabePanel extends JPanel {
     private Aufgabe aufgabe;
     JTextField titelFeld;
     JTextArea beschreibungFeld;
     JTextField datumFeld;
+    JComboBox<Status> stauts;
     
     public EingabePanel() {
         this("", "", null);
     }
     
-    public EingabePanel(Aufgabe aufgabe) {
-        this(aufgabe.getTitel(), aufgabe.getBeschreibung(), aufgabe.getFaelligkeit().toString());
-        this.aufgabe=aufgabe;
+    public EingabePanel(Aufgabe a) {
+        this(a.getTitel(), a.getBeschreibung(), a.getFaelligkeit());
     }
     
-    public EingabePanel(String titel, String beschreibung, String datum) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate datumParsed = datum==null? null: LocalDate.parse(datum, formatter);
-        aufgabe =new Aufgabe(titel, beschreibung, datumParsed);
+    public EingabePanel(String titel, String beschreibung, LocalDate datum) {
+        aufgabe =new Aufgabe(titel, beschreibung, datum);
         
     // Panel für das Formular
     this.setLayout(new GridBagLayout());
@@ -66,7 +64,7 @@ public class EingabePanel extends JPanel {
 
     // Label und Textfeld für Datum
     JLabel datumLabel = new JLabel(I18n.t("ui.Common.Faelligkeit"));
-    datumFeld = (datum == null || datum.equals("")) ? new JTextField(I18n.t("ui.EingabePanel.Datumsformat")) : new JTextField(datum);
+    datumFeld = (datum == null ) ? new JTextField(I18n.t("ui.EingabePanel.Datumsformat")) : new JTextField(datum.toString());
     datumFeld.setPreferredSize(new Dimension(200, 25)); // 1 Zeile hoch
     datumFeld.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
 

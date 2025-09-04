@@ -19,6 +19,15 @@ public class AufgabenManager {
     public void deleteAufgabe(int id) {
         aufgabenListe.removeIf(a -> a.getId() == id);
     }
+    
+    public void updateAufgabe(Aufgabe neu, int id) {
+        for (Aufgabe a: aufgabenListe) {
+            if (a.getId() == id) {
+                a.update(neu);
+                return;
+            }
+        }
+    }
 
     public List<Aufgabe> getAufgabenListe() {
         return aufgabenListe;

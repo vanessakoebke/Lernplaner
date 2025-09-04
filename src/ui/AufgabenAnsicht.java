@@ -68,8 +68,8 @@ public class AufgabenAnsicht extends AbstractTableModel {
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == 3 && aValue instanceof Status) {
-            Aufgabe a = aufgabenManager.getAufgabenListe().get(rowIndex);
-            a.setStatus((Status) aValue);
+            Aufgabe aufgabe = aufgabenManager.getAufgabenListe().get(rowIndex);
+            aufgabe.setStatus((Status) aValue);
             fireTableCellUpdated(rowIndex, columnIndex);
         }
     }
@@ -79,13 +79,18 @@ public class AufgabenAnsicht extends AbstractTableModel {
         int row = getRowCount() - 1;
         fireTableRowsInserted(row, row);
     }
+    
+    public void updateAufgabe(Aufgabe aufgabe, int id, int row) {
+        aufgabenManager.updateAufgabe(aufgabe, id);
+        fireTableRowsUpdated(row, row);
+    }
 
     public Aufgabe getAufgabe(int row) {
         return aufgabenManager.getAufgabenListe().get(row);
     }
 
-    public void removeAufgabe(int row) {
-        aufgabenManager.getAufgabenListe().remove(row);
+    public void removeAufgabe(int row, int id) {
+        aufgabenManager.getAufgabenListe().removeIf(a -> a.getId() == id);
         fireTableRowsDeleted(row, row);
     }
 }

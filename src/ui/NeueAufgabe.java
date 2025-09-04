@@ -4,29 +4,28 @@ import java.awt.*;
 import javax.swing.*;
 
 import lang.I18n;
-import model.Aufgabe;
+import model.*;
+import service.*;
+import ui.buttons.*;
 
 public class NeueAufgabe extends JFrame {
 
-    public interface TaskListener {
-        void aufgabeErstellt(Aufgabe aufgabe);
-    }
-
+ 
+    private AufgabenAnsicht aufgabenAnsicht;
     private EingabePanel eingabePanel;
 
-    public NeueAufgabe(TaskListener listener) {
+    public NeueAufgabe(AufgabenAnsicht aufgabenAnsicht) {
         super(I18n.t("ui.NeueAufgabe.FensterTitel"));
-
+        this.aufgabenAnsicht = aufgabenAnsicht;
         this.eingabePanel = new EingabePanel();
 
         // Buttons
-        JButton buttonAbbrechen = new JButton(I18n.t("Common.ButtonAbbrechen"));
-        buttonAbbrechen.addActionListener(e -> this.dispose());
+        JButton buttonAbbrechen = new CancelButton();
 
         JButton buttonHinzu = new JButton(I18n.t("Common.ButtonHinzufuegen"));
         buttonHinzu.addActionListener(e -> {
             Aufgabe aufgabe = eingabePanel.getAufgabe();
-            listener.aufgabeErstellt(aufgabe); // Callback an Main
+            aufgabenAnsicht.addAufgabe(aufgabe); // Callback an Main
             this.dispose();
         });
 

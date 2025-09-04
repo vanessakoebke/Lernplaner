@@ -1,1 +1,1 @@
-[{"id":2,"titel":"test","beschreibung":"","status":"NEU"},{"id":2,"titel":"test3","beschreibung":"","status":"ANGEFANGEN"}]
+[{"id":4,"titel":"test","beschreibung":"","status":"NEU"},{"id":3,"titel":"123","beschreibung":"","status":"NEU"},{"id":5,"titel":"test3","beschreibung":"","faelligkeit":{"year":2025,"month":8,"day":8},"status":"ERLEDIGT"}]

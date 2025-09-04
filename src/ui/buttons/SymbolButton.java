@@ -1,4 +1,4 @@
-package ui;
+package ui.buttons;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -50,6 +50,7 @@ public class SymbolButton {
     public TableCellEditor getEditor(ActionListener clickAction) {
         return new ButtonEditor(clickAction);
     }
+    
 
     // --------------------- innere Klassen ---------------------
 
@@ -75,6 +76,7 @@ public class SymbolButton {
 
     private class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
         private final JButton editorButton;
+        private int zeile;
 
         public ButtonEditor(ActionListener clickAction) {
             editorButton = new JButton(button.getText(), button.getIcon());
@@ -92,8 +94,14 @@ public class SymbolButton {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            editorButton.setFont(button.getFont()); // <<< nochmal sicherstellen
+            this.zeile = row; // Zeile merken
+            editorButton.setFont(button.getFont());
             return editorButton;
+        }
+
+
+        public int getRow() {
+            return zeile;
         }
 
         @Override

@@ -23,6 +23,9 @@
     "NeueAufgabe": {
       "FensterTitel": "Neue Aufgabe"
     },
+	"AufgabeBearbeiten": {
+	  "FensterTitel": "Aufgabe bearbeiten"	
+	},
     "EingabePanel": {
       "Datumsformat": "TT.MM.JJJJ"
     }

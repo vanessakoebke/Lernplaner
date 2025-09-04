@@ -2,6 +2,8 @@ package ui;
 
 import model.*;
 import service.*;
+import ui.buttons.DeleteButton;
+import ui.buttons.EditButton;
 import lang.I18n;
 import util.*;
 
@@ -23,30 +25,29 @@ public class Main {
         AufgabenManager aufgabenManager = new AufgabenManager(persistenz.laden());
 
         // TableModel
-        AufgabenAnsicht tableModel = new AufgabenAnsicht(aufgabenManager);
+        AufgabenAnsicht aufgabenAnsicht = new AufgabenAnsicht(aufgabenManager);
 
         // JTable
-        JTable tabelle = new JTable(tableModel);
+        JTable tabelle = new JTable(aufgabenAnsicht);
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
 
-        // Status-ComboBox
+        // Status-Dropdown
         JComboBox<Status> statusCombo = new JComboBox<>(Status.values());
         tabelle.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(statusCombo));
 
      // Spalte "Bearbeiten"
         EditButton editButton = new EditButton();
-        int spalte = 4; // Index der Spalte
-        tabelle.getColumnModel().getColumn(spalte)
+        tabelle.getColumnModel().getColumn(4)
                 .setCellRenderer(editButton.getRenderer());
-        tabelle.getColumnModel().getColumn(spalte)
+        tabelle.getColumnModel().getColumn(4)
                 .setCellEditor(editButton.getEditor(e -> {
-                    System.out.println("Das hat geklappt.");
+                    new AufgabeBearbeiten(aufgabenAnsicht, tabelle.getEditingRow());
                 }));
 
         // Spaltenbreite anpassen
         JButton tempButton = editButton.getButton();
-        int buttonBreite = tempButton.getPreferredSize().width + 60; // Puffer hinzufügen
-        TableColumn col = tabelle.getColumnModel().getColumn(spalte);
+        int buttonBreite = tempButton.getPreferredSize().width + 40; // Puffer hinzufügen
+        TableColumn col = tabelle.getColumnModel().getColumn(4);
         col.setPreferredWidth(buttonBreite);
         col.setMaxWidth(buttonBreite);
         col.setMinWidth(buttonBreite);
@@ -58,10 +59,20 @@ public class Main {
         tabelle.getColumnModel().getColumn(5).setCellRenderer(deleteButton.getRenderer());
         tabelle.getColumnModel().getColumn(5).setCellEditor(deleteButton.getEditor(e -> {
             int row = tabelle.getSelectedRow();
-            if (JOptionPane.showConfirmDialog(null, "Aufgabe wirklich löschen?") == JOptionPane.YES_OPTION) {
-                tableModel.removeAufgabe(row);
+            int id = aufgabenAnsicht.getAufgabe(row).getId();
+            if (JOptionPane.showConfirmDialog(null, "Aufgabe wirklich löschen?", "Bestätigung",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                aufgabenAnsicht.removeAufgabe(row, id);
             }
         }));
+        // Spaltenbreite anpassen
+        tempButton = deleteButton.getButton();
+        buttonBreite = tempButton.getPreferredSize().width + 40; // Puffer hinzufügen
+        col = tabelle.getColumnModel().getColumn(5);
+        col.setPreferredWidth(buttonBreite);
+        col.setMaxWidth(buttonBreite);
+        col.setMinWidth(buttonBreite);
 
         JScrollPane scrollPane = new JScrollPane(tabelle);
 
@@ -81,7 +92,7 @@ public class Main {
 
         // Button neue Aufgabe
         JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
-        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabe -> tableModel.addAufgabe(aufgabe)));
+        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabenAnsicht));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(buttonNeueAufgabe);

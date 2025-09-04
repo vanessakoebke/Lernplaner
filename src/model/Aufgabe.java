@@ -28,6 +28,15 @@ public class Aufgabe implements Serializable {
     public Aufgabe(String titel, LocalDate faelligkeit) {
         this(titel, null, faelligkeit);
     }
+    
+
+    
+    public void update(Aufgabe neu) {
+        this.titel = neu.titel;
+        this.beschreibung = neu.beschreibung;
+        this.faelligkeit = neu.faelligkeit;
+        this.status = neu.status;
+    }
 
     public Aufgabe(String titel) {
         this(titel, null, null);

@@ -1,4 +1,4 @@
-package ui;
+package ui.buttons;
 
 public class EditButton extends SymbolButton {
 
