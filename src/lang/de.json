@@ -1,5 +1,6 @@
 {
   "Common": {
+	"Datumsformat_Java": "dd.MM.yyyy",
     "ButtonAbbrechen": "Abbrechen",
     "ButtonHinzufuegen": "Hinzufügen",
     "ButtonOk": "Ok",

@@ -14,10 +14,7 @@ public class Aufgabe implements Serializable {
     private static int nextId = 1;
 
     public Aufgabe(String titel, String beschreibung, LocalDate faelligkeit) {
-        this.id = nextId++;
-        this.titel = titel;
-        this.beschreibung = beschreibung;
-        this.faelligkeit = faelligkeit;
+        
         status = Status.NEU;
     }
 
@@ -29,7 +26,13 @@ public class Aufgabe implements Serializable {
         this(titel, null, faelligkeit);
     }
     
-
+    public Aufgabe(String titel, String beschreibung, LocalDate faelligkeit, int status) {
+        this.id = nextId++;
+        this.titel = titel;
+        this.beschreibung = beschreibung;
+        this.faelligkeit = faelligkeit;
+        this.status = Status.fromInt(status);
+    }
     
     public void update(Aufgabe neu) {
         this.titel = neu.titel;
@@ -53,9 +56,17 @@ public class Aufgabe implements Serializable {
     public LocalDate getFaelligkeit() {
         return faelligkeit;
     }
+    
+    public Status getStatus() {
+        return status;
+    }
 
-    public String getStatus() {
+    public String getStatusString() {
         return status.toString();
+    }
+    
+    public int getStatusIndex() {
+        return status.toInt();
     }
 
     public boolean isErledigt() {

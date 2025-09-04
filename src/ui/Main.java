@@ -29,6 +29,7 @@ public class Main {
 
         // JTable
         JTable tabelle = new JTable(aufgabenAnsicht);
+        tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
 
         // Status-Dropdown
