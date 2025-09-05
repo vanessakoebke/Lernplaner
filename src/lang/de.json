@@ -1,5 +1,10 @@
 {
   "Common": {
+	"Version": "Version",
+	"Sprache": "Sprache",
+	"Einstellungen": "Einstellungen",
+	"de": "Deutsch",
+	"en": "Englisch",
 	"Datumsformat_Java": "dd.MM.yyyy",
     "ButtonAbbrechen": "Abbrechen",
     "ButtonHinzufuegen": "Hinzufügen",
@@ -34,6 +39,22 @@
   "model": {
 	"StatusNeu": "noch nicht begonnen",
 	"StatusAngefangen": "begonnen",
-	"StatusErledigt": "erledigt"
+	"StatusErledigt": "erledigt",
+	"Module": "Module",
+	"ModuleVerwalten": "Module verwalten",
+		"Lerneinheiten": {
+			"Einheit": "Einheit",
+			"Kapitel": "Kapitel",
+			"Lektion": "Lektion",
+			"Karten": "Karteikarten"
+		},
+		"Aufgabentyp": {
+			"Aufgabe": "Aufgabe",
+			"Durcharbeiten": "Skript durcharbeiten und zusammenfassen",
+			"Wiederholen": "Wiederholen",
+			"Einsendeaufgabe": "Einsendeaufgabe",
+			"Allgemein": "Allgemein",
+			"Modul": "Modul"
+		}
   }
 }

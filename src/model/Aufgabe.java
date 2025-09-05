@@ -2,7 +2,9 @@ package model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.*;
+import java.time.temporal.*;
+import java.util.*;
 
 
 public class Aufgabe implements Serializable {
@@ -12,10 +14,11 @@ public class Aufgabe implements Serializable {
     private LocalDate faelligkeit;
     private Status status;
     private static int nextId = 1;
+    private long tageBisFaellig;
+    private List<Aufgabe> teilaufgaben = new ArrayList<Aufgabe>();
 
     public Aufgabe(String titel, String beschreibung, LocalDate faelligkeit) {
-        
-        status = Status.NEU;
+        this(titel, beschreibung, faelligkeit, 0);
     }
 
     public Aufgabe(String titel, String beschreibung) {
@@ -32,19 +35,37 @@ public class Aufgabe implements Serializable {
         this.beschreibung = beschreibung;
         this.faelligkeit = faelligkeit;
         this.status = Status.fromInt(status);
+        this.tageBisFaellig =  ChronoUnit.DAYS.between(LocalDate.now(), faelligkeit);
     }
     
+
+    public Aufgabe(String titel) {
+        this(titel, null, null);
+    }
+
     public void update(Aufgabe neu) {
         this.titel = neu.titel;
         this.beschreibung = neu.beschreibung;
         this.faelligkeit = neu.faelligkeit;
         this.status = neu.status;
     }
-
-    public Aufgabe(String titel) {
-        this(titel, null, null);
+    
+    public void updateTageBisFaellig() {
+        this.tageBisFaellig =  ChronoUnit.DAYS.between(LocalDate.now(), faelligkeit);
     }
-
+    
+    public void addTeilaufgabe(Aufgabe teilaufgabe) {
+        teilaufgaben.add(teilaufgabe);
+    }
+    
+    public List<Aufgabe> getTeilaufgaben(){
+        return teilaufgaben;
+    }
+    
+    public long getTageBisFaellig() {
+        return tageBisFaellig;
+    }
+    
     public String getTitel() {
         return titel;
     }

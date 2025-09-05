@@ -2,8 +2,7 @@ package ui;
 
 import model.*;
 import service.*;
-import ui.buttons.DeleteButton;
-import ui.buttons.EditButton;
+import ui.buttons.*;
 import lang.I18n;
 import util.*;
 
@@ -22,7 +21,8 @@ public class Main {
         I18n.load("de");
 
         Persistenz persistenz = new Persistenz();
-        AufgabenManager aufgabenManager = new AufgabenManager(persistenz.laden());
+        AufgabenManager aufgabenManager = new AufgabenManager(persistenz.aufgabenLaden());
+        ModulManager modulManager = persistenz.moduleLaden();
 
         // TableModel
         AufgabenAnsicht aufgabenAnsicht = new AufgabenAnsicht(aufgabenManager);
@@ -87,6 +87,7 @@ public class Main {
             @Override
             public void windowClosing(WindowEvent e) {
                 persistenz.speichern(aufgabenManager.getAufgabenListe());
+                persistenz.speichern(modulManager);
                 System.exit(0);
             }
         });
@@ -94,12 +95,28 @@ public class Main {
         // Button neue Aufgabe
         JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
         buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabenAnsicht));
+        
+        //Button Einstellungen
+        JButton buttonEinstellungen = new JButton("\uf013");
+        buttonEinstellungen.setPreferredSize(new java.awt.Dimension(25, 25));
+        buttonEinstellungen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 9));
+        buttonEinstellungen.setFont(FALoader.loadFontAwesome());
+        buttonEinstellungen.addActionListener(e -> new Einstellungen());
+        
+        //Unteres Panel
+        JPanel southPanel = new JPanel();
+        southPanel.add(buttonNeueAufgabe);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(buttonNeueAufgabe);
-
+        
+        
+        //Oberes Panel
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BorderLayout());
+        northPanel.add(buttonEinstellungen, BorderLayout.EAST);
+        
+        hauptfenster.add(northPanel, BorderLayout.NORTH);
         hauptfenster.add(scrollPane, BorderLayout.CENTER);
-        hauptfenster.add(buttonPanel, BorderLayout.SOUTH);
+        hauptfenster.add(southPanel, BorderLayout.SOUTH);
         hauptfenster.setVisible(true);
     }
 }
