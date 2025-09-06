@@ -34,6 +34,7 @@
 - [ ] Aufgaben priorisieren
 
 ## Anforderungen langfristig
+- [ ] APIs der Universität einbinden, um bestimmte Daten (z.B. Noten, Klausurtermine) automatisch abzurufen
 - [ ] Gamification (Punkte für Fortschritt o.ä.)
 - [ ] Darkmode
 - [ ] Lernstatistik
