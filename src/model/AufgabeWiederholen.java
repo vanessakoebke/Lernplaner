@@ -22,7 +22,7 @@ public class AufgabeWiederholen extends Aufgabe {
         this(name, null, 0, Lerneinheit.EINHEIT);
     }
 
-    AufgabeWiederholen() {
+    public AufgabeWiederholen() {
         this(I18n.t("model.Aufgabentyp.Wiederholen"));
     }
 

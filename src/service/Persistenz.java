@@ -1,22 +1,26 @@
 package service;
 
-import com.google.gson.*;
-import com.google.gson.reflect.*;
-
-import lang.I18n;
-import model.*;
-import service.*;
-import util.*;
-
 import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import lang.I18n;
+import lang.Sprache;
+import model.*;
+import util.LocalDateAdapter;
 
 public class Persistenz {
     private static final String DATEI_NAME_AUFGABEN = "data/aufgaben.json";
     private static final String DATEI_NAME_MODULE = "data/module.json";
+    private static final String DATEI_NAME_EINSTELLUNGEN = "data/settings.json";
     private Gson gson;
 
     public Persistenz() {
@@ -50,6 +54,19 @@ public class Persistenz {
             e.printStackTrace();
         }
     }
+    
+    public void speichern(Einstellungen einstellungen) {
+        try (FileWriter writer = new FileWriter(DATEI_NAME_EINSTELLUNGEN)) {
+            gson.toJson(einstellungen, writer);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, // zentriert
+                    I18n.t("Common.Errors.SpeichernFehler"), // Nachricht
+                    I18n.t("Common.Errors.Fehler"), // Fenstertitel
+                    JOptionPane.ERROR_MESSAGE // Icon-Typ
+            );
+            e.printStackTrace();
+        }
+    }
 
     // Laden
     public List<Aufgabe> aufgabenLaden() {
@@ -61,14 +78,25 @@ public class Persistenz {
             return new ArrayList<Aufgabe>();
         }
     }
-    
+    //TODO prüfen ob notwendig
     public ModulManager moduleLaden() {
         try (FileReader reader = new FileReader(DATEI_NAME_MODULE)) {
             Type listType = new TypeToken<ModulManager>() {
             }.getType();
             return gson.fromJson(reader, listType);
         } catch (IOException e) {
-            return ModulManager.getModulManager();
+            return new ModulManager();
         }
     }
+    
+    public Einstellungen einstellungenLaden() {
+        try (FileReader reader = new FileReader(DATEI_NAME_EINSTELLUNGEN)) {
+            Type listType = new TypeToken<Einstellungen>() {
+            }.getType();
+            return gson.fromJson(reader, listType);
+        } catch (IOException e) {
+            return new Einstellungen(Sprache.DE, new ModulManager());
+        }
+    }
+    
 }

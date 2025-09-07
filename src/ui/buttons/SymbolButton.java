@@ -1,15 +1,14 @@
 package ui.buttons;
 
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.EventObject;
+
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import util.FALoader;
-
-import javax.swing.AbstractCellEditor;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.util.EventObject;
 
 public class SymbolButton {
 

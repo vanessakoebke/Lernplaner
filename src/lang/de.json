@@ -9,6 +9,10 @@
     "ButtonAbbrechen": "Abbrechen",
     "ButtonHinzufuegen": "Hinzufügen",
     "ButtonOk": "Ok",
+	"ButtonAnwenden": "Anwenden",
+	"Hinweis": {
+		"Neustart": "Programm neustarten, damit die Änderungen aktiv werden."
+	},
     "Errors": {
       "Fehler": "Fehler",
       "UngueltigesDatum": "Ungültiges Datum! Bitte ein Datum im Format TT.MM.JJJJ eingeben.",
@@ -34,7 +38,19 @@
 	},
     "EingabePanel": {
       "Datumsformat": "TT.MM.JJJJ"
-    }
+    },
+	"Modulverwaltung": {
+		"Titel": "Modulverwaltung",
+		"AktuelleModule": "Aktuelle Module",
+		"AlteModule": "Abgeschlossene Module",
+		"ModulHinzu": "Modul hinzufügen",
+		"Klausurtermin": "Klausurtermin"
+	},
+	"Kalender": {
+		"Heute": "Heute",
+		"Monat": "Monat",
+		"Jahr": "Jahr"
+	}
   },
   "model": {
 	"StatusNeu": "noch nicht begonnen",

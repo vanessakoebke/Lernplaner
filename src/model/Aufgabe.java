@@ -2,9 +2,9 @@ package model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.*;
-import java.time.temporal.*;
-import java.util.*;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Aufgabe implements Serializable {
@@ -35,7 +35,7 @@ public class Aufgabe implements Serializable {
         this.beschreibung = beschreibung;
         this.faelligkeit = faelligkeit;
         this.status = Status.fromInt(status);
-        this.tageBisFaellig =  ChronoUnit.DAYS.between(LocalDate.now(), faelligkeit);
+        this.tageBisFaellig =  faelligkeit == null ? 200 : ChronoUnit.DAYS.between(LocalDate.now(), faelligkeit);
     }
     
 

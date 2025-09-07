@@ -20,7 +20,8 @@ public class AufgabenAnsicht extends AbstractTableModel {
     };
 
     private final AufgabenManager aufgabenManager;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(I18n.t("Common.Datumsformat_Java"));
+//    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(I18n.t("Common.Datumsformat_Java"));
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public AufgabenAnsicht(AufgabenManager aufgabenManager) {
         this.aufgabenManager = aufgabenManager;
