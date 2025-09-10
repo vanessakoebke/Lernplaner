@@ -34,5 +34,19 @@ public class ModulManager implements Serializable {
     public void addModul(Modul modul) {
         modulliste.add(modul);
     }
+
+    public void removeModul(Modul modul) {
+        modulliste.remove(modul);
+    }
+
+    public List<Modul> getAlteModule() {
+        List<Modul> alteModule = new ArrayList<>();
+        for (Modul modul: modulliste) {
+            if (modul.getAktuell()==false) {
+                alteModule.add(modul);
+            }
+        }
+        return alteModule;
+    }
     
 }

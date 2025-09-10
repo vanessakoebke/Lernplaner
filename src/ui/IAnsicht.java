@@ -1,7 +1,8 @@
 package ui;
 
-import java.util.List;
-
 public interface IAnsicht {
-    void updateSprache(List<?> liste);
+    //TODO prüfen ob updateSprache benötigt wird
+    //void updateSprache(List<?> liste); 
+    
+    void refresh();
 }

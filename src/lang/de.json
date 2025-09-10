@@ -44,7 +44,9 @@
 		"AktuelleModule": "Aktuelle Module",
 		"AlteModule": "Abgeschlossene Module",
 		"ModulHinzu": "Modul hinzufügen",
-		"Klausurtermin": "Klausurtermin"
+		"Klausurtermin": "Klausurtermin",
+		"Abgeschlossen": "Abgeschlossen",
+		"Note": "Note"
 	},
 	"Kalender": {
 		"Heute": "Heute",

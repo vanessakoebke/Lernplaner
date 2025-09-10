@@ -3,6 +3,7 @@ package service;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,8 @@ import com.google.gson.reflect.TypeToken;
 
 import lang.I18n;
 import lang.Sprache;
-import model.*;
+import model.Aufgabe;
+import model.Einstellungen;
 import util.LocalDateAdapter;
 
 public class Persistenz {
@@ -41,7 +43,7 @@ public class Persistenz {
             e.printStackTrace();
         }
     }
-    
+
     public void speichern(ModulManager modulManager) {
         try (FileWriter writer = new FileWriter(DATEI_NAME_MODULE)) {
             gson.toJson(modulManager, writer);
@@ -54,7 +56,7 @@ public class Persistenz {
             e.printStackTrace();
         }
     }
-    
+
     public void speichern(Einstellungen einstellungen) {
         try (FileWriter writer = new FileWriter(DATEI_NAME_EINSTELLUNGEN)) {
             gson.toJson(einstellungen, writer);
@@ -78,7 +80,8 @@ public class Persistenz {
             return new ArrayList<Aufgabe>();
         }
     }
-    //TODO prüfen ob notwendig
+
+    // TODO prüfen ob notwendig
     public ModulManager moduleLaden() {
         try (FileReader reader = new FileReader(DATEI_NAME_MODULE)) {
             Type listType = new TypeToken<ModulManager>() {
@@ -88,15 +91,16 @@ public class Persistenz {
             return new ModulManager();
         }
     }
-    
+
     public Einstellungen einstellungenLaden() {
+        Einstellungen einstellungen;
         try (FileReader reader = new FileReader(DATEI_NAME_EINSTELLUNGEN)) {
-            Type listType = new TypeToken<Einstellungen>() {
-            }.getType();
-            return gson.fromJson(reader, listType);
+            einstellungen = gson.fromJson(reader, Einstellungen.class);
         } catch (IOException e) {
-            return new Einstellungen(Sprache.DE, new ModulManager());
+            // Wenn Datei nicht existiert oder Fehler beim Lesen
+            einstellungen = new Einstellungen(Sprache.DE, new ModulManager());
         }
+        einstellungen.initDatumsformat(); // falls du diese Methode in Einstellungen anlegst
+        return einstellungen;
     }
-    
 }

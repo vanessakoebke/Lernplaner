@@ -19,12 +19,13 @@ public class AufgabenAnsicht extends AbstractTableModel {
             ""  // Löschen
     };
 
-    private final AufgabenManager aufgabenManager;
-//    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(I18n.t("Common.Datumsformat_Java"));
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private AufgabenManager aufgabenManager;
+    private Einstellungen einstellungen;
+    
 
-    public AufgabenAnsicht(AufgabenManager aufgabenManager) {
+    public AufgabenAnsicht(AufgabenManager aufgabenManager, Einstellungen einstellungen) {
         this.aufgabenManager = aufgabenManager;
+        this.einstellungen = einstellungen;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class AufgabenAnsicht extends AbstractTableModel {
         switch (columnIndex) {
             case 0: return a.getTitel();
             case 1: return a.getBeschreibung() != null ? a.getBeschreibung() : "";
-            case 2: return a.getFaelligkeit() != null ? a.getFaelligkeit().format(formatter) : "";
+            case 2: return a.getFaelligkeit() != null ? a.getFaelligkeit().format(einstellungen.getDatumsformat()) : "";
             case 3: return a.getStatus();
             default: return "Button"; // Platzhalter für Button-Spalten
         }

@@ -30,7 +30,7 @@ public class Hauptfenster extends JFrame {
         this.persistenz = persistenz;
         this.aufgabenManager = aufgabenManager;
         // TableModel
-        AufgabenAnsicht aufgabenAnsicht = new AufgabenAnsicht(aufgabenManager);
+        AufgabenAnsicht aufgabenAnsicht = new AufgabenAnsicht(aufgabenManager, einstellungen);
         // JTable
         JTable tabelle = new JTable(aufgabenAnsicht);
         tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));

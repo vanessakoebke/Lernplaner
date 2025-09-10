@@ -1,40 +1,36 @@
 package ui;
 
-import java.awt.*;
-import java.util.Properties;
+import java.awt.BorderLayout;
 
 import javax.swing.*;
-
-import org.jdatepicker.impl.*;
 
 import lang.I18n;
 import model.Modul;
 import service.ModulManager;
 import ui.buttons.CancelButton;
-import util.CalendarFormatter;
 
 
-public class NeuesModul extends JFrame{
+public class ModulBearbeiten extends JFrame implements IAnsicht{
     private ModulPanel modulPanel;
 
-    public NeuesModul(ModulManager modulManager, ModulVerwAnsicht ursprungsfenster) {
+    public ModulBearbeiten(ModulManager modulManager, IAnsicht ursprungsfenster, Modul modul) {
         super(I18n.t("ui.Modulverwaltung.ModulHinzu"));
-        if (modulManager == null) {
-            System.out.println("Hilfe!");
-        }
-        this.setSize(400, 300);
+        Modul altesModul = modul;
+        this.setSize(400, 400);
         this.setLocationRelativeTo(null);
         this.setLayout(new BorderLayout());
         
-        modulPanel = new ModulPanel(new Modul(""));
+        modulPanel = new ModulPanel(modul);
         
         this.add(modulPanel, BorderLayout.CENTER);
         
-        //Buttons Abbrechen und Hinzufügen
-        JButton buttonHinzu = new JButton(I18n.t("Common.ButtonHinzufuegen"));
+        //Buttons Abbrechen und Ok
+        JButton buttonHinzu = new JButton(I18n.t("Common.ButtonOk"));
         buttonHinzu.addActionListener(e -> {
-            Modul modul = modulPanel.getModul();
-            modulManager.addModul(modul); // Callback an Main
+            if (modulManager.getAlleModule().contains(altesModul)) {
+                modulManager.removeModul(altesModul);
+            } 
+            modulManager.addModul(modulPanel.getModul()); // Callback an Main
             this.dispose();
             ursprungsfenster.refresh();
         });
@@ -44,6 +40,12 @@ public class NeuesModul extends JFrame{
         this.add(buttonPanel, BorderLayout.SOUTH);
         
         this.setVisible(true);
+    }
+
+    @Override
+    public void refresh() {
+        // hier ist nichts zu tun
+        
     }
 
 

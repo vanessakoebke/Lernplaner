@@ -53,7 +53,7 @@ public class EinstellungenAnsicht extends JFrame {
             });
         
         JButton buttonModule = new JButton(I18n.t("model.ModuleVerwalten"));
-        buttonModule.addActionListener(e -> new ModulVerwAnsicht(einstellungen));
+        buttonModule.addActionListener(e -> new ModulVerwAnsicht(this.einstellungen));
         gbc.gridx = 0;
         gbc.gridy = 10;
         this.add(buttonModule, gbc);

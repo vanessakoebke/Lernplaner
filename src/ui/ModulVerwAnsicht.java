@@ -8,80 +8,238 @@ import lang.I18n;
 import model.Einstellungen;
 import model.Modul;
 import service.ModulManager;
+import util.FALoader;
 
-public class ModulVerwAnsicht extends JFrame{
+public class ModulVerwAnsicht extends JFrame implements IAnsicht {
     private Einstellungen einstellungen;
     private ModulManager modulManager;
-    private String aktuelleModule;
-    private String alteModule;
+    private DefaultListModel<Modul> listModelAkt;
+    private JList<Modul> aktuelleModule;
+    private DefaultListModel<Modul> listModelAlt;
+    private JList<Modul> alteModule;
 
     public ModulVerwAnsicht(Einstellungen einstellungen) {
         super(I18n.t("ui.Modulverwaltung.Titel"));
         this.einstellungen = einstellungen;
         this.modulManager = einstellungen.getModulManager();
-        this.setSize(600, 400);
+
+        this.setSize(700, 500);
         this.setLocationRelativeTo(null);
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        
-        
+
+        // Aktuelle Module
         JLabel aktModuleLabel = new JLabel(I18n.t("ui.Modulverwaltung.AktuelleModule"));
         gbc.gridx = 0;
         gbc.gridy = 0;
         this.add(aktModuleLabel, gbc);
+
+        listModelAkt = new DefaultListModel<>();
+        aktuelleModule = new JList<>(listModelAkt);
+        aktuelleModule.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        aktuelleModule.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                    JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                Modul m = (Modul) value;
+
+                if (m.getKlausurTermin() == null) {
+                    setText(m.getName());
+                } else {
+                    String datum = m.getKlausurTermin().format(einstellungen.getDatumsformat());
+                    setText(m.getName() + "    (" + datum + ")");
+                }
+
+                return this;
+            }
+        });
+
+
+        JScrollPane aktModuleScroll = new JScrollPane(
+                aktuelleModule,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+        JPanel panelAkt = new JPanel(new BorderLayout());
+        panelAkt.add(aktModuleScroll, BorderLayout.CENTER);
+
+        // Delete Button aktuelle Module
+        JButton deleteButtonAkt = getDeleteButton();
+        deleteButtonAkt.addActionListener(e -> {
+            Modul selected = aktuelleModule.getSelectedValue(); 
+            if (selected != null) {
+                listModelAkt.removeElement(selected);           
+                modulManager.removeModul(selected);             
+            }
+        });
+
+        //Edit Button aktuelle Module
+        JButton editButtonAkt= getEditButton();
+        editButtonAkt.addActionListener(e -> {
+            if (aktuelleModule.getSelectedValue() != null) {
+                new ModulBearbeiten(modulManager, this, aktuelleModule.getSelectedValue());
+            }
+        });
         
-        refresh();
-        JTextArea aktModuleArea = new JTextArea(aktuelleModule, 4, 20);
-        aktModuleArea.setEditable(false);
-        gbc.gridx =1;
-        this.add(aktModuleArea, gbc);
+        JPanel buttonPanelAkt = new JPanel();
+        buttonPanelAkt.setLayout(new BorderLayout());
+        buttonPanelAkt.add(editButtonAkt, BorderLayout.NORTH);
+        buttonPanelAkt.add(deleteButtonAkt, BorderLayout.SOUTH);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0; // ScrollPane soll vertikal wachsen
+        gbc.fill = GridBagConstraints.BOTH;
+        this.add(aktModuleScroll, gbc);
         
+        gbc.weightx = 0;
+        gbc.weighty = 0; // ScrollPane soll vertikal wachsen
+        gbc.fill = GridBagConstraints.NORTHWEST;
+        gbc.gridx =2;
+        this.add(buttonPanelAkt, gbc); 
+
+        // Alte Module
         JLabel alteModuleLabel = new JLabel(I18n.t("ui.Modulverwaltung.AlteModule"));
         gbc.gridx = 0;
         gbc.gridy = 2;
         this.add(alteModuleLabel, gbc);
         
-        //Module hinzufügen
-        JButton buttonModulNeu = new JButton(I18n.t("ui.Modulverwaltung.ModulHinzu"));
-        buttonModulNeu.addActionListener(e -> {
-            new NeuesModul(modulManager, this);
+        listModelAlt = new DefaultListModel<>();
+        alteModule = new JList<>(listModelAlt);
+        alteModule.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        alteModule.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                    JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                Modul m = (Modul) value;
+
+                if (m.getNote() == null) {
+                    setText(m.getName());
+                } else {
+                    setText(m.getName() + "    (Note: " + m.getNote() + ")");
+                }
+
+                return this;
+            }
         });
+
+
+        JScrollPane altModuleScroll = new JScrollPane(
+                alteModule,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+
+        // Delete Button alte Module
+        JButton deleteButtonAlt = getDeleteButton();
+        deleteButtonAlt.addActionListener(e -> {
+            Modul selected = alteModule.getSelectedValue(); 
+            if (selected != null) {
+                listModelAlt.removeElement(selected);           
+                modulManager.removeModul(selected);             
+            }
+        });
+        
+        //Edit Button alte Module
+        JButton editButtonAlt= getEditButton();
+        editButtonAlt.addActionListener(e -> {
+            if (alteModule.getSelectedValue() != null) {
+                new ModulBearbeiten(modulManager, this, alteModule.getSelectedValue());
+            }
+        });
+        
+        JPanel buttonPanelAlt = new JPanel();
+        buttonPanelAlt.setLayout(new BorderLayout());
+        buttonPanelAlt.add(editButtonAlt, BorderLayout.NORTH);
+        buttonPanelAlt.add(deleteButtonAlt, BorderLayout.SOUTH);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0; // ScrollPane soll vertikal wachsen
+        gbc.fill = GridBagConstraints.BOTH;
+        this.add(altModuleScroll, gbc);
+        
+        gbc.weightx = 0;
+        gbc.weighty = 0; // ScrollPane soll vertikal wachsen
+        gbc.fill = GridBagConstraints.NORTHWEST;
+        gbc.gridx =2;
+        this.add(buttonPanelAlt, gbc); 
+
+        // Neuer Modul Button
+        JButton buttonModulNeu = new JButton(I18n.t("ui.Modulverwaltung.ModulHinzu"));
+        buttonModulNeu.addActionListener(e -> new ModulBearbeiten(modulManager, this, new Modul("")));
         gbc.gridx = 0;
         gbc.gridy = 20;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
         this.add(buttonModulNeu, gbc);
-        
-        //Leere Füller, damit die anderen Elemente an die richtige Stelle kommen.
+
+        // Füller, damit die Komponenten richtig positioniert werden
         gbc.gridx = 100;
-        gbc.gridy = 0; // rechts von allen Komponenten
-        gbc.weightx = 1; // nimmt den restlichen horizontalen Platz
+        gbc.gridy = 0;
+        gbc.weightx = 1;
         gbc.fill = GridBagConstraints.VERTICAL;
         this.add(Box.createGlue(), gbc);
-        
+
         gbc.gridx = 0;
-        gbc.gridy = 100; // unter allen Komponenten
-        gbc.weighty = 1; // nimmt den restlichen vertikalen Platz
+        gbc.gridy = 100;
+        gbc.weighty = 1;
         gbc.fill = GridBagConstraints.VERTICAL;
         this.add(Box.createGlue(), gbc);
-        
-        
+
+        // Initiale Inhalte laden
+        refresh();
+
         this.setVisible(true);
     }
-    
-    public void refresh() {
-        aktuelleModule ="";
-        try {
-            for (Modul modul: einstellungen.getModulManager().getAktuelleModule()) {
-                aktuelleModule += modul +"\n";
-            }
-        } catch (Exception e) {
-            //nichts tun, wenn es keine Module gibt soll dem Textfeld auch nichts hinzugefügt werden.
-        }
-        
+
+    private JButton getDeleteButton() {
+        JButton button = new JButton("\uf1f8");
+//        button.setPreferredSize(new Dimension(24, 24));
+        button.setFont(FALoader.loadFontAwesome());
+        button.setFocusPainted(true);
+        button.setBorderPainted(false);
+        return button;
     }
     
-    
+    private JButton getEditButton() {
+        JButton button = new JButton("\uf044");
+//        button.setPreferredSize(new Dimension(50, 50));
+        button.setFont(FALoader.loadFontAwesome());
+        button.setFocusPainted(true);
+        button.setBorderPainted(false);
+        return button;
+    }
+
+    @Override
+    public void refresh() {
+        listModelAkt.clear();
+        for (Modul m : modulManager.getAktuelleModule()) {
+               listModelAkt.addElement(m);
+        }
+        listModelAlt.clear();
+        for (Modul m : modulManager.getAlteModule()) {
+                listModelAlt.addElement(m);
+        }
+    }
 }
+
+
+
+
+    
+    
+
