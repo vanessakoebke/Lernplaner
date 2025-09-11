@@ -11,33 +11,35 @@ public class Aufgabe implements Serializable {
     private int id;
     private String titel;
     private String beschreibung;
-    private LocalDate faelligkeit;
+    private LocalDate start;
+    private LocalDate ende;
     private Status status;
     private static int nextId = 1;
     private long tageBisFaellig;
+    private Modul modul;
     private List<Aufgabe> teilaufgaben = new ArrayList<Aufgabe>();
 
-    public Aufgabe(String titel, String beschreibung, LocalDate faelligkeit) {
-        this(titel, beschreibung, faelligkeit, 0);
+    public Aufgabe(String titel, String beschreibung, LocalDate ende) {
+        this(titel, beschreibung, ende, LocalDate.now(),  0, null);
     }
 
     public Aufgabe(String titel, String beschreibung) {
         this(titel, beschreibung, null);
     }
 
-    public Aufgabe(String titel, LocalDate faelligkeit) {
-        this(titel, null, faelligkeit);
+    public Aufgabe(String titel, LocalDate ende) {
+        this(titel, null, ende);
     }
     
-    public Aufgabe(String titel, String beschreibung, LocalDate faelligkeit, int status) {
+    public Aufgabe(String titel, String beschreibung, LocalDate ende, LocalDate start, int status, Modul modul) {
         this.id = nextId++;
         this.titel = titel;
         this.beschreibung = beschreibung;
-        this.faelligkeit = faelligkeit;
+        this.ende = ende;
         this.status = Status.fromInt(status);
-        this.tageBisFaellig =  faelligkeit == null ? 200 : ChronoUnit.DAYS.between(LocalDate.now(), faelligkeit);
+        this.tageBisFaellig =  ende == null ? 200 : ChronoUnit.DAYS.between(LocalDate.now(), ende);
+        this.modul = modul;
     }
-    
 
     public Aufgabe(String titel) {
         this(titel, null, null);
@@ -46,12 +48,29 @@ public class Aufgabe implements Serializable {
     public void update(Aufgabe neu) {
         this.titel = neu.titel;
         this.beschreibung = neu.beschreibung;
-        this.faelligkeit = neu.faelligkeit;
+        this.ende = neu.ende;
         this.status = neu.status;
     }
     
+    public LocalDate getStart() {
+        return start;
+    }
+    
+    public void setStart(LocalDate start) {
+        this.start = start;
+    }
+    
+    public Modul getModul() {
+        return modul;
+    }
+    
+    public void setModul(Modul modul) {
+        this.modul = modul;
+    }
+    
     public void updateTageBisFaellig() {
-        this.tageBisFaellig =  ChronoUnit.DAYS.between(LocalDate.now(), faelligkeit);
+        this.start = LocalDate.now(); //TODO prüfen, ob das sinnvoll ist
+        this.tageBisFaellig =  ChronoUnit.DAYS.between(LocalDate.now(), ende);
     }
     
     public void addTeilaufgabe(Aufgabe teilaufgabe) {
@@ -75,7 +94,7 @@ public class Aufgabe implements Serializable {
     }
 
     public LocalDate getFaelligkeit() {
-        return faelligkeit;
+        return ende;
     }
     
     public Status getStatus() {
@@ -99,7 +118,7 @@ public class Aufgabe implements Serializable {
     }
 
     public void setFaelligkeit(LocalDate faelligkeit) {
-        this.faelligkeit = faelligkeit;
+        this.ende = faelligkeit;
     }
 
     public void setBeschreibung(String beschreibung) {
@@ -114,5 +133,4 @@ public class Aufgabe implements Serializable {
         return id;
     }
 
-   
 }

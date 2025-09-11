@@ -9,16 +9,13 @@ import lang.I18n;
 public class Modul {
     private String name;
     private LocalDate klausurTermin;
-    private List<Aufgabe> aufgabenliste;
     private boolean aktuell;
     private String note;
-    private static int tageDurcharbeiten = 112;
-    private static int tageWiederholen = 28;
+    private int tageWiederholen = 30;
 
     public Modul(String name, LocalDate klausurTermin, boolean aktuell, String note) {
         this.name = name;
         this.klausurTermin = klausurTermin;
-        aufgabenliste = null;
         this.aktuell = aktuell;
         this.note = note;
     }
@@ -42,6 +39,14 @@ public class Modul {
         } else {
             return name + " (" + I18n.t("ui.Modulverwaltung.Note") + ": " + note;
         }
+    }
+    
+    public int getTageWiederholen() {
+        return tageWiederholen;
+    }
+    
+    public void setTageWiederholen(int tageWiederholen) {
+        this.tageWiederholen = tageWiederholen;
     }
     
     public LocalDate getKlausurTermin() {
@@ -72,10 +77,5 @@ public class Modul {
         this.note= note;
     }
     
-    public void erzeugeAufgabenliste(int seiten) {
-        aufgabenliste = new ArrayList<Aufgabe>();
-        LocalDate deadlineDurcharbeiten = klausurTermin.minusDays(tageWiederholen);
-        aufgabenliste.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten"), deadlineDurcharbeiten, seiten));
-        aufgabenliste.add(new AufgabeWiederholen());
-    }
+    
 }

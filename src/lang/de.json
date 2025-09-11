@@ -60,19 +60,20 @@
 	"StatusErledigt": "erledigt",
 	"Module": "Module",
 	"ModuleVerwalten": "Module verwalten",
-		"Lerneinheiten": {
-			"Einheit": "Einheit",
-			"Kapitel": "Kapitel",
-			"Lektion": "Lektion",
-			"Karten": "Karteikarten"
+	"Lerneinheiten": {
+		"Einheit": "Einheit",
+		"Kapitel": "Kapitel",
+		"Lektion": "Lektion",			
+		"Karten": "Karteikarten",
+		"Altklausur": "Altklausur"
 		},
-		"Aufgabentyp": {
-			"Aufgabe": "Aufgabe",
-			"Durcharbeiten": "Skript durcharbeiten und zusammenfassen",
-			"Wiederholen": "Wiederholen",
-			"Einsendeaufgabe": "Einsendeaufgabe",
-			"Allgemein": "Allgemein",
-			"Modul": "Modul"
+	"Aufgabentyp": {
+		"Aufgabe": "Aufgabe",
+		"Durcharbeiten": "Skript durcharbeiten und zusammenfassen",
+		"Wiederholen": "Wiederholen",			
+		"EA": "Einsendeaufgabe",
+		"Allgemein": "Allgemein",
+		"Modul": "Modul"
 		}
   }
 }

@@ -3,11 +3,13 @@ package model;
 import lang.I18n;
 
 enum Lerneinheit {
-    EINHEIT, KAPITEL, LEKTION, KARTEN, MODUL;
+    EINHEIT, KAPITEL, LEKTION, KARTEN, MODUL, ALTKLAUSUR;
 
     @Override
     public String toString() {
         switch (this) {
+        case ALTKLAUSUR:
+            return I18n.t("model.Lerneinheiten.Altklausur");
         case KAPITEL:
             return I18n.t("model.Lerneinheiten.Kapitel");
         case LEKTION:
