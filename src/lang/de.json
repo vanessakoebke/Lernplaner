@@ -23,6 +23,7 @@
     "Common": {
       "Aufgabenname": "Aufgabenname",
       "Beschreibung": "Beschreibung",
+	  "Start": "Start am",
       "Faelligkeit": "Fällig am",
       "Status": "Status"
     },

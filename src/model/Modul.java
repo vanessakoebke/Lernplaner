@@ -30,15 +30,7 @@ public class Modul {
     
     @Override
     public String toString() {
-        if (aktuell == true) {
-            if (klausurTermin ==null) {
-                return name;
-            } else {
-            return name + " (" + klausurTermin  + ")";
-            }
-        } else {
-            return name + " (" + I18n.t("ui.Modulverwaltung.Note") + ": " + note;
-        }
+        return name;
     }
     
     public int getTageWiederholen() {

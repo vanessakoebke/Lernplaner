@@ -36,6 +36,7 @@ public class Aufgabe implements Serializable {
         this.titel = titel;
         this.beschreibung = beschreibung;
         this.ende = ende;
+        this.start = start;
         this.status = Status.fromInt(status);
         this.tageBisFaellig =  ende == null ? 200 : ChronoUnit.DAYS.between(LocalDate.now(), ende);
         this.modul = modul;
@@ -47,9 +48,12 @@ public class Aufgabe implements Serializable {
 
     public void update(Aufgabe neu) {
         this.titel = neu.titel;
+        this.modul = neu.modul;
         this.beschreibung = neu.beschreibung;
+        this.start = neu.start;
         this.ende = neu.ende;
         this.status = neu.status;
+        this.teilaufgaben = neu.teilaufgaben;
     }
     
     public LocalDate getStart() {
@@ -93,7 +97,7 @@ public class Aufgabe implements Serializable {
         return beschreibung;
     }
 
-    public LocalDate getFaelligkeit() {
+    public LocalDate getEnde() {
         return ende;
     }
     
@@ -117,8 +121,8 @@ public class Aufgabe implements Serializable {
         this.status = status;
     }
 
-    public void setFaelligkeit(LocalDate faelligkeit) {
-        this.ende = faelligkeit;
+    public void setEnde(LocalDate ende) {
+        this.ende = ende;
     }
 
     public void setBeschreibung(String beschreibung) {
