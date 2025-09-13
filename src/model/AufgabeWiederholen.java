@@ -9,7 +9,7 @@ public class AufgabeWiederholen extends Aufgabe {
     private Lerneinheit einheitstyp; 
 
     AufgabeWiederholen(String name, LocalDate ende, LocalDate start, Modul modul, int einheiten, Lerneinheit einheitstyp) {
-        super(name,"", ende, start, 0, modul);
+        super("wiederholen", name,"", ende, start, 0, modul);
         this.einheiten = einheiten;
         this.einheitstyp = einheitstyp;
     }
@@ -26,5 +26,10 @@ public class AufgabeWiederholen extends Aufgabe {
         }
     }
 
+    @Override
+    public String getTyp() {
+        return I18n.t("model.Aufgabentyp.Wiederholen");
+    }
+    
 
 }

@@ -7,21 +7,19 @@ import javax.swing.*;
 import lang.I18n;
 import model.Einstellungen;
 import model.Modul;
-import service.ModulManager;
+import service.Control;
 import util.FALoader;
 
 public class ModulVerwAnsicht extends JFrame implements IAnsicht {
-    private Einstellungen einstellungen;
-    private ModulManager modulManager;
+    private Control control;
     private DefaultListModel<Modul> listModelAkt;
     private JList<Modul> aktuelleModule;
     private DefaultListModel<Modul> listModelAlt;
     private JList<Modul> alteModule;
 
-    public ModulVerwAnsicht(Einstellungen einstellungen) {
+    public ModulVerwAnsicht(Control control) {
         super(I18n.t("ui.Modulverwaltung.Titel"));
-        this.einstellungen = einstellungen;
-        this.modulManager = einstellungen.getModulManager();
+        this.control = control;
 
         this.setSize(700, 500);
         this.setLocationRelativeTo(null);
@@ -52,7 +50,7 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
                 if (m.getKlausurTermin() == null) {
                     setText(m.getName());
                 } else {
-                    String datum = m.getKlausurTermin().format(einstellungen.getDatumsformat());
+                    String datum = m.getKlausurTermin().format(control.getEinstellungen().getDatumsformat());
                     setText(m.getName() + "    (" + datum + ")");
                 }
 
@@ -76,7 +74,7 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
             Modul selected = aktuelleModule.getSelectedValue(); 
             if (selected != null) {
                 listModelAkt.removeElement(selected);           
-                modulManager.removeModul(selected);             
+                control.getMm().removeModul(selected);             
             }
         });
 
@@ -84,7 +82,7 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
         JButton editButtonAkt= getEditButton();
         editButtonAkt.addActionListener(e -> {
             if (aktuelleModule.getSelectedValue() != null) {
-                new ModulBearbeiten(modulManager, this, aktuelleModule.getSelectedValue());
+                new ModulBearbeiten(control.getMm(), this, aktuelleModule.getSelectedValue());
             }
         });
         
@@ -148,7 +146,7 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
             Modul selected = alteModule.getSelectedValue(); 
             if (selected != null) {
                 listModelAlt.removeElement(selected);           
-                modulManager.removeModul(selected);             
+                control.getMm().removeModul(selected);             
             }
         });
         
@@ -156,7 +154,7 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
         JButton editButtonAlt= getEditButton();
         editButtonAlt.addActionListener(e -> {
             if (alteModule.getSelectedValue() != null) {
-                new ModulBearbeiten(modulManager, this, alteModule.getSelectedValue());
+                new ModulBearbeiten(control.getMm(), this, alteModule.getSelectedValue());
             }
         });
         
@@ -180,7 +178,7 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
 
         // Neuer Modul Button
         JButton buttonModulNeu = new JButton(I18n.t("ui.Modulverwaltung.ModulHinzu"));
-        buttonModulNeu.addActionListener(e -> new ModulBearbeiten(modulManager, this, new Modul("")));
+        buttonModulNeu.addActionListener(e -> new ModulBearbeiten(control.getMm(), this, new Modul("")));
         gbc.gridx = 0;
         gbc.gridy = 20;
         gbc.gridwidth = 2;
@@ -227,11 +225,11 @@ public class ModulVerwAnsicht extends JFrame implements IAnsicht {
     @Override
     public void refresh() {
         listModelAkt.clear();
-        for (Modul m : modulManager.getAktuelleModule()) {
+        for (Modul m : control.getMm().getAktuelleModule()) {
                listModelAkt.addElement(m);
         }
         listModelAlt.clear();
-        for (Modul m : modulManager.getAlteModule()) {
+        for (Modul m : control.getMm().getAlteModule()) {
                 listModelAlt.addElement(m);
         }
     }

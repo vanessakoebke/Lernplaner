@@ -1,16 +1,14 @@
-package service;
+package model;
 
 import java.time.LocalDate;
 
 import lang.I18n;
-import model.Aufgabe;
-import model.Modul;
 
 public class AufgabeEA extends Aufgabe {
     private String ergebnis;
 
-    AufgabeEA(int nummer, LocalDate end, LocalDate start, Modul modul) {
-        super(I18n.t("model.Aufgabentyp.EA") + " " + nummer, "", end, start, 0, modul);
+    public AufgabeEA(int nummer, LocalDate end, LocalDate start, Modul modul) {
+        super("ea", I18n.t("model.Aufgabentyp.EA") + " " + nummer, "", end, start, 0, modul);
         this.ergebnis = null;
     }
     
@@ -21,4 +19,11 @@ public class AufgabeEA extends Aufgabe {
     public void setErgebnis(String ergebnis) {
         this.ergebnis = ergebnis;
     }
+    
+    @Override
+    public String getTyp() {
+        return I18n.t("model.Aufgabentyp.EA");
+    }
+    
+
 }

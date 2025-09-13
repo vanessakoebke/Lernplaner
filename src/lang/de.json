@@ -14,9 +14,11 @@
 		"Neustart": "Programm neustarten, damit die Änderungen aktiv werden."
 	},
     "Errors": {
-      "Fehler": "Fehler",
-      "UngueltigesDatum": "Ungültiges Datum! Bitte ein Datum im Format TT.MM.JJJJ eingeben.",
-      "SpeichernFehler": "Speichern nicht möglich"
+		"Warnung": "Warnung",
+      	"Fehler": "Fehler",
+     	 "UngueltigesDatum": "Ungültiges Datum! Bitte ein Datum im Format TT.MM.JJJJ eingeben.",
+		 "UngueltigeSeiten": "Ungültige Seitenanzahl. Bitte gib eine Zahl ein.",
+      	"SpeichernFehler": "Speichern nicht möglich"
     }
   },
   "ui": {
@@ -62,6 +64,7 @@
 	"Module": "Module",
 	"ModuleVerwalten": "Module verwalten",
 	"Lerneinheiten": {
+		"Seiten": "Seiten",
 		"Einheit": "Einheit",
 		"Kapitel": "Kapitel",
 		"Lektion": "Lektion",			
@@ -69,6 +72,7 @@
 		"Altklausur": "Altklausur"
 		},
 	"Aufgabentyp": {
+		"Typ": "Aufgabentyp",
 		"Aufgabe": "Aufgabe",
 		"Durcharbeiten": "Skript durcharbeiten und zusammenfassen",
 		"Wiederholen": "Wiederholen",			

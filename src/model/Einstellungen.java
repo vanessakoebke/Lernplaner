@@ -4,27 +4,14 @@ import java.time.format.DateTimeFormatter;
 
 import lang.I18n;
 import lang.Sprache;
-import service.ModulManager;
 
 public class Einstellungen {
     private Sprache sprache;
-    private ModulManager modulManager;
     private transient DateTimeFormatter datumsformat;
 
-    public ModulManager getModulManager() {
-        if (modulManager == null) {
-            modulManager = new ModulManager();
-        }
-        return modulManager;
-    }
 
-    public void setModulManager(ModulManager modulManager) {
-        this.modulManager = modulManager;
-    }
-
-    public Einstellungen(Sprache sprache, ModulManager modulManager) {
+    public Einstellungen(Sprache sprache) {
         this.sprache = sprache;
-        this.modulManager = modulManager;
         try {
             datumsformat = DateTimeFormatter.ofPattern(I18n.t("Common.Datumsformat_Java"));
         } catch (Exception e) {

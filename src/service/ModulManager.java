@@ -1,20 +1,30 @@
 package service;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.Modul;
 
 public class ModulManager implements Serializable {   
-    private List<Modul> modulliste;     
+    private List<Modul> modulliste;    
+    private DatenbankService db;
 
 
-    public ModulManager() {
+    public ModulManager(DatenbankService db) {
+        this.db = db;
         modulliste = new ArrayList<>();
     }
 
+    private void ladeModule() {
+        try (Connection conn = db.connect()) {
+            modulliste = db.getModule(); // Annahme: diese Methode liefert List<Modul>
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public List<Modul> getAlleModule() {
@@ -32,11 +42,12 @@ public class ModulManager implements Serializable {
     }
     
     public void addModul(Modul modul) {
-        modulliste.add(modul);
+        upsertModul(modul);
     }
 
     public void removeModul(Modul modul) {
-        modulliste.remove(modul);
+            db.deleteModul(modul);
+            modulliste.removeIf(m -> m.getName().equals(modul.getName()));
     }
 
     public List<Modul> getAlteModule() {
@@ -47,6 +58,17 @@ public class ModulManager implements Serializable {
             }
         }
         return alteModule;
+    }
+    
+    public void upsertModul(Modul modul) {
+        try (Connection conn = db.connect()) {
+            db.upsertModul(modul); // Die Upsert-Methode aus DatenbankService
+            // Cache aktualisieren
+            modulliste.removeIf(m -> m.getName().equals(modul.getName()));
+            modulliste.add(modul);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
 }

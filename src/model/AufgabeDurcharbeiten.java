@@ -8,14 +8,14 @@ import lang.I18n;
 public class AufgabeDurcharbeiten extends Aufgabe {
     private int seiten;
 
-    public AufgabeDurcharbeiten(String titel, LocalDate ende, LocalDate start, Modul modul, int seiten) {
-        super(titel, "", ende, start, 0, modul);
+    public AufgabeDurcharbeiten(String titel, String beschreibung, LocalDate ende, LocalDate start, int status, Modul modul, int seiten) {
+        super("durcharbeiten", titel, beschreibung, ende, start, status, modul);
         this.seiten = seiten;
     }
 
     public AufgabeDurcharbeiten(String titel, String beschreibung, LocalDate ende, LocalDate start, int status, int seiten, Modul modul,
             int anzahlTeilaufgaben) {
-        super(titel, beschreibung, ende, start, status, modul);
+        super("durcharbeiten", titel, beschreibung, ende, start, status, modul);
         this.seiten = seiten;
         int seitenzahlProAufgabe = seiten / anzahlTeilaufgaben;
         long tageProAufgabe = this.getTageBisFaellig() / anzahlTeilaufgaben;
@@ -23,7 +23,7 @@ public class AufgabeDurcharbeiten extends Aufgabe {
         LocalDate endeProAufgabe = LocalDate.now();
         for (int i = 1; i <= anzahlTeilaufgaben; i++) {
             endeProAufgabe = endeProAufgabe.plusDays(tageProAufgabe);
-            addTeilaufgabe(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Lektion") + " " + i, endeProAufgabe, startProAufgabe, modul, seitenzahlProAufgabe));
+            addTeilaufgabe(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Lektion") + " " + i, "", endeProAufgabe, startProAufgabe, 0, modul, seitenzahlProAufgabe));
             startProAufgabe = startProAufgabe.plusDays(tageProAufgabe);
         }
     }
@@ -57,4 +57,10 @@ public class AufgabeDurcharbeiten extends Aufgabe {
         }
         seiten = summe;
     }
+    @Override
+    public String getTyp() {
+        return I18n.t("model.Aufgabentyp.Durcharbeiten");
+    }
+    
+
 }

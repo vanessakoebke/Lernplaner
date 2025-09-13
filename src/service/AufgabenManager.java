@@ -54,7 +54,7 @@ public class AufgabenManager {
         int seitenProLektion = seiten / 7;
         int tageProLektion = (int) Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), ende));;
         for (int i = 1; i <=7; i++) {
-            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, ende, LocalDate.now().plusDays(tageProLektion * (i-1)), modul, seitenProLektion));
+            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, "", ende, LocalDate.now().plusDays(tageProLektion * (i-1)), 0, modul, seitenProLektion));
         }
     }
     
@@ -62,7 +62,7 @@ public class AufgabenManager {
         LocalDate ende = modul.getKlausurTermin().minusDays(modul.getTageWiederholen());
         int tageProLektion = (int) Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), ende));
         for (int i = 1; i <=seiten.length; i++) {
-            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, LocalDate.now().plusDays(tageProLektion * i), LocalDate.now().plusDays(tageProLektion * (i-1)), modul, seiten[i-1]));
+            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, "", LocalDate.now().plusDays(tageProLektion * i), LocalDate.now().plusDays(tageProLektion * (i-1)), i, i, modul, seiten[i-1]));
         }
     }
     

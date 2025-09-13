@@ -9,7 +9,7 @@ public class AufgabeAltklausur extends Aufgabe {
     private String ergebnis;
     
     public AufgabeAltklausur(LocalDate ende, LocalDate start, Modul modul, String semester){
-        super(I18n.t("model.Lerneinheiten.Altklausur") + " " + semester, "", ende, start, 0, modul);
+        super("altklausur", I18n.t("model.Lerneinheiten.Altklausur") + " " + semester, "", ende, start, 0, modul);
         this.semester = semester;
         this.ergebnis = null;
     }
@@ -29,4 +29,9 @@ public class AufgabeAltklausur extends Aufgabe {
     public void setErgebnis(String ergebnis) {
         this.ergebnis = ergebnis;
     }
+    @Override
+    public String getTyp() {
+        return I18n.t("model.Aufgabentyp.Altklausur");
+    }
+    
 }

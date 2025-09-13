@@ -1,12 +1,9 @@
 package model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import lang.I18n;
 
 public class Modul {
+    private Integer id; 
     private String name;
     private LocalDate klausurTermin;
     private boolean aktuell;
@@ -14,6 +11,7 @@ public class Modul {
     private int tageWiederholen = 30;
 
     public Modul(String name, LocalDate klausurTermin, boolean aktuell, String note) {
+        this.id = null;
         this.name = name;
         this.klausurTermin = klausurTermin;
         this.aktuell = aktuell;
@@ -23,6 +21,14 @@ public class Modul {
     public Modul(String name) {
         this(name, null, true, null);
     }
+    
+    public Integer getId() { 
+        return id; 
+        }
+    
+    public void setId(Integer id) { 
+        this.id = id; 
+        }
     
     public String getName() {
         return name;

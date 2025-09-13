@@ -6,7 +6,7 @@ import javax.swing.*;
 
 import lang.I18n;
 import model.Aufgabe;
-import model.Einstellungen;
+import service.Control;
 import ui.buttons.CancelButton;
 
 public class AufgabeBearbeiten extends JFrame {
@@ -14,11 +14,11 @@ public class AufgabeBearbeiten extends JFrame {
     private AufgabenAnsicht aufgabenAnsicht;
     private Aufgabe aufgabe;
 
-    AufgabeBearbeiten(AufgabenAnsicht aufgabenAnsicht, int row, Einstellungen einstellungen) {
+    AufgabeBearbeiten(AufgabenAnsicht aufgabenAnsicht, int row, Control control) {
         super(I18n.t("ui.AufgabeBearbeiten.FensterTitel"));
         this.aufgabenAnsicht = aufgabenAnsicht;
         aufgabe = aufgabenAnsicht.getAufgabe(row);
-        this.eingabePanel = new EingabePanel(aufgabe, einstellungen);
+        this.eingabePanel = new EingabePanel(aufgabe, control);
         // Buttons
         JButton buttonAbbrechen = new CancelButton();
         JButton buttonOk = new JButton(I18n.t("Common.ButtonOk"));

@@ -13,32 +13,34 @@ import org.jdatepicker.impl.*;
 
 import lang.I18n;
 import model.*;
+import service.Control;
 import util.CalendarFormatter;
 
 public class EingabePanel extends JPanel implements IAnsicht{
     private Aufgabe aufgabe;
     private JComboBox<Modul> modulFeld;
+    private JComboBox<String> aufgabentypFeld;
     private JTextField titelFeld;
     private JTextArea beschreibungFeld;
     private JDatePickerImpl startFeld;
     private JDatePickerImpl endeFeld;
     private JComboBox<Status> statusFeld;
-    private DateTimeFormatter formatter;
-    private Einstellungen einstellungen;
+    private JTextField seitenDurcharbeitenFeld;
+    private Control control;
 
-    public EingabePanel(Einstellungen einstellungen) {
-        this(new Aufgabe("", ""), einstellungen);
+    public EingabePanel(Control control) {
+        this(new AufgabeAllgemein("", ""), control);
     }
 
-    public EingabePanel(String titel, String beschreibung, LocalDate ende, LocalDate start, int status, Modul modul, Einstellungen einstellungen) {
-        this(new Aufgabe(titel, beschreibung, ende, start, status, modul), einstellungen);
+    public EingabePanel(String titel, String beschreibung, LocalDate ende, LocalDate start, int status, Modul modul, Control control) {
+        this(new AufgabeAllgemein(titel, beschreibung, ende, start, status, modul), control);
     }
     
 
-    public EingabePanel(Aufgabe aufgabe, Einstellungen einstellungen) {
+    public EingabePanel(Aufgabe aufgabe, Control control) {
         this.aufgabe = aufgabe;
-        this.einstellungen = einstellungen;
-        formatter = DateTimeFormatter.ofPattern(I18n.t("Common.Datumsformat_Java"));
+        this.control = control;
+        DateTimeFormatter formatter = control.getEinstellungen().getDatumsformat();
         
         // Panel für das Formular
         this.setLayout(new GridBagLayout());
@@ -50,7 +52,7 @@ public class EingabePanel extends JPanel implements IAnsicht{
         
         //Label und Textfeld für das Modul
         JLabel modulLabel = new JLabel(I18n.t("model.Aufgabentyp.Modul"));
-        this.modulFeld = new JComboBox<Modul>(einstellungen.getModulManager().getAktuelleModule().toArray(new Modul[0]));
+        this.modulFeld = new JComboBox<Modul>(control.getMm().getAktuelleModule().toArray(new Modul[0]));
         if (aufgabe.getModul() != null) {
             modulFeld.setSelectedItem(aufgabe.getModul());
         } else {
@@ -61,6 +63,21 @@ public class EingabePanel extends JPanel implements IAnsicht{
         this.add(modulLabel, gbc);
         gbc.gridx = 1;
         this.add(modulFeld, gbc);
+        
+     // Label und Textfeld für Aufgabentyp-Dropdown
+        JLabel aufgabentypLabel = new JLabel(I18n.t("model.Aufgabentyp.Typ"));
+        aufgabentypFeld = new JComboBox<String>();
+        aufgabentypFeld.addItem(I18n.t("model.Aufgabentyp.Allgemein"));
+        aufgabentypFeld.addItem(I18n.t("model.Aufgabentyp.Durcharbeiten"));
+        aufgabentypFeld.addItem( I18n.t("model.Aufgabentyp.EA"));
+        aufgabentypFeld.addItem(I18n.t("model.Aufgabentyp.Wiederholen"));
+        aufgabentypFeld.addItem(I18n.t("model.Aufgabentyp.Altklausur"));
+        aufgabentypFeld.setSelectedItem(aufgabe.getTyp());
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        this.add(aufgabentypLabel, gbc);
+        gbc.gridx = 1;
+        this.add(aufgabentypFeld, gbc);
         
         // Label und Textfeld für Titel
         JLabel titelLabel = new JLabel(I18n.t("ui.Common.Aufgabenname"));
@@ -154,6 +171,43 @@ public class EingabePanel extends JPanel implements IAnsicht{
         this.add(statusLabel, gbc);
         gbc.gridx = 1;
         this.add(statusFeld, gbc);
+        
+        //Label und Textfeld für Seitenzahl für Aufgabentyp Durcharbeiten
+        JLabel seitenDurcharbeitenLabel = new JLabel(I18n.t("model.Lerneinheiten.Seiten"));
+        seitenDurcharbeitenFeld = new JTextField();
+        if (aufgabe instanceof AufgabeDurcharbeiten) {
+            AufgabeDurcharbeiten ad = (AufgabeDurcharbeiten) aufgabe;
+            if(ad.getSeiten() !=0) {
+                seitenDurcharbeitenFeld.setText(String.valueOf(ad.getSeiten())); 
+                seitenDurcharbeitenLabel.setVisible(true);
+                seitenDurcharbeitenFeld.setVisible(true);
+            }
+        } else {
+            seitenDurcharbeitenLabel.setVisible(false);
+            seitenDurcharbeitenFeld.setVisible(false);
+        }
+        seitenDurcharbeitenFeld.setPreferredSize(new Dimension(200, 25)); // 1 Zeile hoch
+        seitenDurcharbeitenFeld.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+        gbc.gridx = 0;
+        gbc.gridy = 22;
+        this.add(seitenDurcharbeitenLabel, gbc);
+        gbc.gridx = 1;
+        this.add(seitenDurcharbeitenFeld, gbc);
+        
+        //ActionListener um korrekte Felder einzublenden
+        aufgabentypFeld.addActionListener(e -> {
+            switch(aufgabentypFeld.getSelectedIndex()) {
+            case 1:        
+                seitenDurcharbeitenLabel.setVisible(true);
+                seitenDurcharbeitenFeld.setVisible(true);
+                return;
+            case 2:
+            case 3:
+                
+            case 4:
+            default: ;
+            }
+        });
     }
 
     public Aufgabe getAufgabe() {
@@ -167,7 +221,32 @@ public class EingabePanel extends JPanel implements IAnsicht{
         if (selectedEndDate != null) {
             ende = selectedEndDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
-        return new Aufgabe(titelFeld.getText(), beschreibungFeld.getText(), ende, start, statusFeld.getSelectedIndex(), (Modul) modulFeld.getSelectedItem());
+        switch (aufgabentypFeld.getSelectedIndex()) {
+        case 1:  
+            int seiten = 0;
+            try {
+                seiten = Integer.parseInt(seitenDurcharbeitenFeld.getText());
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(
+                        null,                        // Parent-Komponente, null = zentriert auf Bildschirm
+                        I18n.t("Common.Errors.UngueltigeSeiten"),     // Nachricht
+                        I18n.t("Common.Errors.Warnung"),                   // Titel des Fensters
+                        JOptionPane.WARNING_MESSAGE  // Icon / Typ des Dialogs
+                    );
+            }
+            return new AufgabeDurcharbeiten(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                    statusFeld.getSelectedIndex(), (Modul) modulFeld.getSelectedItem(), seiten);
+            
+        case 2:
+        case 3:
+            
+        case 4:
+        default: 
+            return new AufgabeAllgemein(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                statusFeld.getSelectedIndex(), (Modul) modulFeld.getSelectedItem());
+        }
+        
     }
 
     @Override

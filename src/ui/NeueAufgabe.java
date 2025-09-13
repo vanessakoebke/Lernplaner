@@ -12,10 +12,10 @@ public class NeueAufgabe extends JFrame {
     private AufgabenAnsicht aufgabenAnsicht;
     private EingabePanel eingabePanel;
 
-    public NeueAufgabe(AufgabenAnsicht aufgabenAnsicht, Einstellungen einstellungen) {
+    public NeueAufgabe(AufgabenAnsicht aufgabenAnsicht, Control control) {
         super(I18n.t("ui.NeueAufgabe.FensterTitel"));
         this.aufgabenAnsicht = aufgabenAnsicht;
-        this.eingabePanel = new EingabePanel(einstellungen);
+        this.eingabePanel = new EingabePanel(control);
 
         // Buttons
         JButton buttonAbbrechen = new CancelButton();

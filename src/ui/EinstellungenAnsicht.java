@@ -6,15 +6,14 @@ import javax.swing.*;
 
 import lang.I18n;
 import lang.Sprache;
-import model.Einstellungen;
-import ui.buttons.CancelButton;
+import service.Control;
 
 public class EinstellungenAnsicht extends JFrame {
-    private Einstellungen einstellungen;
+    private Control control;
     
-    public EinstellungenAnsicht(Einstellungen einstellungen) {
+    public EinstellungenAnsicht(Control control) {
         super(I18n.t("Common.Einstellungen"));
-        this.einstellungen = einstellungen;
+        this.control = control;
         // Haupt-Panel
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -35,14 +34,14 @@ public class EinstellungenAnsicht extends JFrame {
 
         JLabel spracheLabel = new JLabel(I18n.t("Common.Sprache"));
         JComboBox<Sprache> sprachauswahl = new JComboBox<>(Sprache.values());
-        sprachauswahl.setSelectedItem(einstellungen.getSprache());
+        sprachauswahl.setSelectedItem(control.getEinstellungen().getSprache());
         gbc.gridx = 0;
         gbc.gridy = 1;
         this.add(spracheLabel, gbc);
         gbc.gridx = 1;
         this.add(sprachauswahl, gbc);
         sprachauswahl.addActionListener(e -> {
-            einstellungen.setSprache((Sprache) sprachauswahl.getSelectedItem());
+            control.getEinstellungen().setSprache((Sprache) sprachauswahl.getSelectedItem());
             JOptionPane.showMessageDialog(
                     null,                             // Elternfenster (null = zentriert auf Bildschirm)
                     I18n.t("Common.Hinweis.Neustart"),    // Nachricht
@@ -53,7 +52,7 @@ public class EinstellungenAnsicht extends JFrame {
             });
         
         JButton buttonModule = new JButton(I18n.t("model.ModuleVerwalten"));
-        buttonModule.addActionListener(e -> new ModulVerwAnsicht(this.einstellungen));
+        buttonModule.addActionListener(e -> new ModulVerwAnsicht(control));
         gbc.gridx = 0;
         gbc.gridy = 10;
         this.add(buttonModule, gbc);

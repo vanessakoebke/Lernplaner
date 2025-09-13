@@ -11,25 +11,20 @@ import javax.swing.table.TableColumn;
 import lang.I18n;
 import model.Einstellungen;
 import model.Status;
-import service.AufgabenManager;
-import service.Persistenz;
+import service.*;
 import ui.buttons.DeleteButton;
 import ui.buttons.EditButton;
 import util.FALoader;
 
 public class Hauptfenster extends JFrame implements IAnsicht {
-    private Persistenz persistenz;
-    private AufgabenManager aufgabenManager;
-    private Einstellungen einstellungen;
     private AufgabenAnsicht aufgabenAnsicht;
+    private Control control;
 
-    public Hauptfenster(Persistenz persistenz, AufgabenManager aufgabenManager, Einstellungen einstellungen) {
+    public Hauptfenster(Control control) {
         super(I18n.t("ui.Main.FensterTitel"));
-        this.einstellungen = einstellungen;
-        this.persistenz = persistenz;
-        this.aufgabenManager = aufgabenManager;
+        this.control = control;
         // Aufgabenansicht (TableModel)
-         this.aufgabenAnsicht = new AufgabenAnsicht(aufgabenManager, einstellungen);
+         this.aufgabenAnsicht = new AufgabenAnsicht(control);
         // JTable
         JTable tabelle = new JTable(aufgabenAnsicht);
         tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));
@@ -41,7 +36,7 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         EditButton editButton = new EditButton();
         tabelle.getColumnModel().getColumn(6).setCellRenderer(editButton.getRenderer());
         tabelle.getColumnModel().getColumn(6).setCellEditor(editButton.getEditor(e -> {
-            new AufgabeBearbeiten(aufgabenAnsicht, tabelle.getEditingRow(), einstellungen);
+            new AufgabeBearbeiten(aufgabenAnsicht, tabelle.getEditingRow(), control);
         }));
         // Spaltenbreite anpassen
         JButton tempButton = editButton.getButton();
@@ -78,20 +73,20 @@ public class Hauptfenster extends JFrame implements IAnsicht {
             @Override
             public void windowClosing(WindowEvent e) {
                 dispose();
-                persistenz.speichern(aufgabenManager.getAufgabenListe());
-                persistenz.speichern(einstellungen);
+                control.getPersistenz().speichern(control.getAm().getAufgabenListe());
+                control.getPersistenz().speichern(control.getEinstellungen());
                 System.exit(0);
             }
         });
         // Button neue Aufgabe
         JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
-        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabenAnsicht, einstellungen));
+        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabenAnsicht, control));
         // Button Einstellungen
         JButton buttonEinstellungen = new JButton("\uf013");
         buttonEinstellungen.setPreferredSize(new java.awt.Dimension(25, 25));
         buttonEinstellungen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 9));
         buttonEinstellungen.setFont(FALoader.loadFontAwesome());
-        buttonEinstellungen.addActionListener(e -> new EinstellungenAnsicht(einstellungen));
+        buttonEinstellungen.addActionListener(e -> new EinstellungenAnsicht(control));
         // Unteres Panel
         JPanel southPanel = new JPanel();
         southPanel.add(buttonNeueAufgabe);
