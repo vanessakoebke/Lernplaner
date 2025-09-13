@@ -10,10 +10,10 @@
 - [x] Übersetzbarkeit implementieren [#7]
 
 ## Version 1.1
-- [ ] Module anlegen und verwalten [#8]
-- [ ] Aufgaben Modulen zuweisen [#9]
+- [x] Module anlegen und verwalten [#8]
+- [x] Aufgaben Modulen zuweisen [#9]
 - [ ] Unterscheidung verschiedener Aufgabentypen
-  - [ ] Allgemein [#10]
+  - [x] Allgemein [#10]
   - [ ] Lesen und Zusammenfassen [#11]
   - [ ] Einsendeaufgabe bearbeiten [#12]
   - [ ] Wiederholen [#13]
@@ -21,17 +21,21 @@
      
 ## Version 1.2
 - [ ] Modul einplanen [#15]
-  - [ ] Klausurtermin anlegen [#17]
-  - [ ] zugehörige Aufgaben planen anhand von Seitenzahl und verfügbare Zeit [#18]
+  - [x] Klausurtermin anlegen [#17]
+  - [ ] zugehörige Aufgaben planen anhand von Seitenzahl und verfügbarer Zeit [#18]
 - [ ] Aufgabenarchiv für erledigte Aufgaben [#19]
 
 
 ## Anforderungen mittelfristig
-- [ ] Speichern- und Laden-Buttons 
-- [ ] verbesserte GUI
-- [ ] Aufgabenliste filtern
-- [ ] Aufgabenliste sortieren
-- [ ] Aufgaben priorisieren
+- [ ] Speichern- und Laden-Buttons [#25]
+- [ ] verbesserte GUI (noch zu definieren)
+- [ ] Aufgabenliste filtern [#26]
+- [ ] Aufgabenliste sortieren [#27]
+- [ ] Aufgaben priorisieren [#28]
+- [ ] Persistenz über Datenbank [#29]
+- [ ] Ansicht tägliche Aufgaben [#30]
+- [ ] Ansicht wöchentliche Aufgaben [#31]
+- [ ] Übersetzung [#32]
 
 ## Anforderungen langfristig
 - [ ] APIs der Universität einbinden, um bestimmte Daten (z.B. Noten, Klausurtermine) automatisch abzurufen
