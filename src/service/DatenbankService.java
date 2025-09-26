@@ -43,6 +43,9 @@ public class DatenbankService {
                 "status INTEGER NOT NULL, " +
                 "modulId INTEGER, " +
                 "seiten INTEGER, " +
+                "ergebnis TEXT," +
+                "einheiten INTEGER," +
+                "einheitstyp TEXT," +
                 "FOREIGN KEY(modulId) REFERENCES module(id)" +
                 ");";
 
@@ -54,67 +57,153 @@ public class DatenbankService {
     }
 
     public void upsertAufgabe(Aufgabe aufgabe) {
-        String sql = "INSERT INTO aufgabe (typ, titel, beschreibung, start, ende, status, modulId, seiten) " +  //Tabelle anpassen hier!
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
-                     "ON CONFLICT(id) DO UPDATE SET " +
-                     "typ = excluded.typ, " +
-                     "titel = excluded.titel, " +
-                     "beschreibung = excluded.beschreibung, " +
-                     "start = excluded.start, " +
-                     "ende = excluded.ende, " +
-                     "status = excluded.status, " +
-                     "modulId = excluded.modulId, " +
-                     "seiten = excluded.seiten;";
+        // INSERT wenn neu (id == null), sonst UPDATE
+        if (aufgabe.getId() == null) {
+            String sql = "INSERT INTO aufgabe (typ, titel, beschreibung, start, ende, status, modulId, seiten, ergebnis, einheiten, einheitstyp)" +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, aufgabe.getTyp());                 // Subklasse
-            pstmt.setString(2, aufgabe.getTitel());
-            pstmt.setString(3, aufgabe.getBeschreibung());
+                int idx = 1;
+                pstmt.setString(idx++, aufgabe.getTyp().name());
+                pstmt.setString(idx++, aufgabe.getTitel());
 
-            if (aufgabe.getStart() != null) {
-                pstmt.setString(4, aufgabe.getStart().toString());
-            } else {
-                pstmt.setNull(4, java.sql.Types.VARCHAR);
-            }
+                if (aufgabe.getBeschreibung() != null) {
+                    pstmt.setString(idx++, aufgabe.getBeschreibung());
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
 
-            if (aufgabe.getEnde() != null) {
-                pstmt.setString(5, aufgabe.getEnde().toString());
-            } else {
-                pstmt.setNull(5, java.sql.Types.VARCHAR);
-            }
+                LocalDate start = aufgabe.getStart();
+                if (start != null) {
+                    pstmt.setString(idx++, start.toString()); // ISO-String YYYY-MM-DD
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
 
-            pstmt.setInt(6, aufgabe.getStatusIndex());
-            
-            if (aufgabe.getModul() != null && aufgabe.getModul().getId() != null) {
-                pstmt.setInt(7, aufgabe.getModul().getId());
-            } else {
-                pstmt.setNull(7, java.sql.Types.INTEGER);
-            }
+                LocalDate ende = aufgabe.getEnde();
+                if (ende != null) {
+                    pstmt.setString(idx++, ende.toString());
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
 
-            // Beispiel für optionale Unterklassenfelder
-            if (aufgabe instanceof AufgabeDurcharbeiten) {
-                pstmt.setInt(8, ((AufgabeDurcharbeiten) aufgabe).getSeiten());
-            } else {
-                pstmt.setNull(8, java.sql.Types.INTEGER);
-            }
+                pstmt.setInt(idx++, aufgabe.getStatusIndex());
 
-            pstmt.executeUpdate();
+                if (aufgabe.getModul() != null && aufgabe.getModul().getId() != null) {
+                    pstmt.setInt(idx++, aufgabe.getModul().getId());
+                } else {
+                    pstmt.setNull(idx++, Types.INTEGER);
+                }
 
-            // ID übernehmen, falls neu eingefügt
-            if (aufgabe.getId() == null) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        aufgabe.setId(generatedKeys.getInt(1));
+                if (aufgabe instanceof AufgabeDurcharbeiten) {
+                    pstmt.setInt(idx++, ((AufgabeDurcharbeiten) aufgabe).getSeiten());
+                } else {
+                    pstmt.setNull(idx++, Types.INTEGER);
+                }
+                
+                if (aufgabe instanceof AufgabeEA) {
+                    pstmt.setString(idx++, ((AufgabeEA) aufgabe).getErgebnis());
+                } else if (aufgabe instanceof AufgabeAltklausur) {
+                    pstmt.setString(idx++, ((AufgabeAltklausur) aufgabe).getErgebnis());
+                }else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+                
+                if (aufgabe instanceof AufgabeWiederholen) {
+                    pstmt.setInt(idx++, ((AufgabeWiederholen) aufgabe).getEinheiten());
+                    pstmt.setString(idx++, ((AufgabeWiederholen) aufgabe).getEinheitstyp().name());
+                } else {
+                    pstmt.setNull(idx++, Types.INTEGER);
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+                
+                
+
+                pstmt.executeUpdate();
+
+                // generierte ID auslesen und in Objekt setzen
+                try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        aufgabe.setId(keys.getInt(1));
                     }
                 }
-            }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+         // UPDATE für vorhandene Aufgabe
+            String sql = "UPDATE aufgabe SET typ=?, titel=?, beschreibung=?, start=?, ende=?, status=?, modulId=?, seiten=?, ergebnis=?, einheiten=?, einheitstyp=? WHERE id=?";
+            try (Connection conn = connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                int idx = 1;
+                pstmt.setString(idx++, aufgabe.getTyp().name());
+                pstmt.setString(idx++, aufgabe.getTitel());
+
+                if (aufgabe.getBeschreibung() != null) {
+                    pstmt.setString(idx++, aufgabe.getBeschreibung());
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+
+                LocalDate start = aufgabe.getStart();
+                if (start != null) {
+                    pstmt.setString(idx++, start.toString());
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+
+                LocalDate ende = aufgabe.getEnde();
+                if (ende != null) {
+                    pstmt.setString(idx++, ende.toString());
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+
+                pstmt.setInt(idx++, aufgabe.getStatusIndex());
+
+                if (aufgabe.getModul() != null && aufgabe.getModul().getId() != null) {
+                    pstmt.setInt(idx++, aufgabe.getModul().getId());
+                } else {
+                    pstmt.setNull(idx++, Types.INTEGER);
+                }
+
+                if (aufgabe instanceof AufgabeDurcharbeiten) {
+                    pstmt.setInt(idx++, ((AufgabeDurcharbeiten) aufgabe).getSeiten());
+                } else {
+                    pstmt.setNull(idx++, Types.INTEGER);
+                }
+
+                // Ergebnis für EA oder Altklausur
+                if (aufgabe instanceof AufgabeEA) {
+                    pstmt.setString(idx++, ((AufgabeEA) aufgabe).getErgebnis());
+                } else if (aufgabe instanceof AufgabeAltklausur) {
+                    pstmt.setString(idx++, ((AufgabeAltklausur) aufgabe).getErgebnis());
+                } else {
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+
+                // Einheiten und Einheitstyp für Wiederholen
+                if (aufgabe instanceof AufgabeWiederholen) {
+                    pstmt.setInt(idx++, ((AufgabeWiederholen) aufgabe).getEinheiten());
+                    pstmt.setString(idx++, ((AufgabeWiederholen) aufgabe).getEinheitstyp().name());
+                } else {
+                    pstmt.setNull(idx++, Types.INTEGER);
+                    pstmt.setNull(idx++, Types.VARCHAR);
+                }
+
+                // WHERE id = ?
+                pstmt.setInt(idx++, aufgabe.getId());
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 
     public void deleteAufgabe(Aufgabe aufgabe) {
         if (aufgabe.getId() == null) {
@@ -131,10 +220,7 @@ public class DatenbankService {
 
             if (affectedRows == 0) {
                 System.out.println("Keine Aufgabe mit dieser ID gefunden: " + aufgabe.getId());
-            } else {
-                System.out.println("Aufgabe erfolgreich gelöscht: " + aufgabe.getId());
-            }
-
+            } 
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -142,7 +228,7 @@ public class DatenbankService {
 
     public List<Aufgabe> getAufgaben() {
         List<Aufgabe> aufgaben = new ArrayList<>();
-        String sql = "SELECT id, typ, titel, beschreibung, start, ende, status, modulId, seiten FROM aufgabe"; //Tabelle anpassen hier!
+        String sql = "SELECT id, typ, titel, beschreibung, start, ende, status, modulId, seiten, ergebnis, einheiten, einheitstyp FROM aufgabe"; //Tabelle anpassen hier!
 
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -150,14 +236,33 @@ public class DatenbankService {
 
             while (rs.next()) {
                 int id = rs.getInt("id");
-                String typ = rs.getString("typ");
                 String titel = rs.getString("titel");
                 String beschreibung = rs.getString("beschreibung");
                 LocalDate start = rs.getString("start") != null ? LocalDate.parse(rs.getString("start")) : null;
                 LocalDate ende = rs.getString("ende") != null ? LocalDate.parse(rs.getString("ende")) : null;
-                int status = rs.getInt("status");
+                int statusInt = rs.getInt("status");
+                Status status;
+                switch (statusInt) {
+                case 0: status = Status.NEU;
+                case 1: status =  Status.ANGEFANGEN;
+                case 2: status =  Status.ERLEDIGT;
+                default: status =  Status.NEU;
+                }
                 Integer modulId = rs.getInt("modulId");
-                int seiten = rs.getInt("seiten");//Tabelle anpassen hier!
+                int seiten = rs.getInt("seiten");
+                String ergebnis = rs.getString("ergebnis");
+                int einheiten = rs.getInt("einheiten");
+                String einheitstypString = rs.getString("einheitstyp");
+                Lerneinheit einheitstyp;
+                switch (einheitstypString) {
+                case "EINHEIT": einheitstyp = Lerneinheit.EINHEIT;
+                case "KAPITEL": einheitstyp = Lerneinheit.KAPITEL;
+                case "LEKTION": einheitstyp = Lerneinheit.LEKTION;
+                case "KARTEN": einheitstyp = Lerneinheit.KARTEN;
+                case "MODUL": einheitstyp = Lerneinheit.MODUL;
+                case "ALTKLAUSUR": einheitstyp = Lerneinheit.ALTKLAUSUR;
+                default: einheitstyp =  Lerneinheit.EINHEIT;
+                }
 
                 Modul modul = null;
                 if (modulId != null) {
@@ -165,23 +270,27 @@ public class DatenbankService {
                 }
 
                 Aufgabe aufgabe;
+                Aufgabentyp typ = Aufgabentyp.valueOf(rs.getString("typ"));
                 switch (typ) {
-                    case "allgemein":
+                    case ALLGEMEIN:
                         aufgabe = new AufgabeAllgemein(titel, beschreibung, ende, start, status, modul);
                         break;
-                    case "durcharbeiten":
+                    case DURCHARBEITEN:
                         aufgabe = new AufgabeDurcharbeiten(titel, beschreibung, ende, start, status, modul, seiten);
                         break;
-//                    case "ea":
-//                        //aufgabe = new AufgabeEA(titel, beschreibung, ende, start, status, modul);
-//                        break;
-//                    case "altklausur":
-//                        //aufgabe = new AufgabeAltklausur(titel, beschreibung, ende, start, status, modul);
-//                        break;
+                    case EA:
+                        aufgabe = new AufgabeEA(titel, beschreibung, ende, start, status, modul, ergebnis);
+                        break;
+                    case ALTKLAUSUR:
+                        aufgabe = new AufgabeAltklausur(titel, beschreibung, ende, start, status, modul, ergebnis);
+                        break;
+                    case WIEDERHOLEN:
+                        aufgabe = new AufgabeWiederholen(titel, beschreibung, ende, start, status, modul, einheiten, einheitstyp);
+                        break;
                     default:
-                        // Fallback, falls Typ unbekannt
-                        aufgabe = new AufgabeAllgemein(titel, beschreibung, ende, start, status, modul);
+                        throw new IllegalArgumentException("Unbekannter Aufgabentyp: " + typ);
                 }
+
 
                 aufgabe.setId(id); // ID setzen, falls du sie brauchst
                 aufgaben.add(aufgabe);

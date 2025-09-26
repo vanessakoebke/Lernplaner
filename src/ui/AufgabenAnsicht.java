@@ -93,8 +93,21 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
     }
 
     public void removeAufgabe(int row, int id) {
-        control.getAm().getAufgabenListe().removeIf(a -> a.getId() == id);
-        fireTableRowsDeleted(row, row);
+        // Zuerst die Aufgabe aus der Liste holen
+        Aufgabe zuLoeschen = control.getAm().getAufgabenListe()
+                                   .stream()
+                                   .filter(a -> a.getId() != null && a.getId() == id)
+                                   .findFirst()
+                                   .orElse(null);
+
+        if (zuLoeschen != null) {
+            // Aus der Liste entfernen
+            control.getAm().getAufgabenListe().remove(zuLoeschen);
+            // Aus der DB löschen
+            control.getDb().deleteAufgabe(zuLoeschen);
+            // TableModel informieren
+            fireTableRowsDeleted(row, row);
+        }
     }
 
     @Override

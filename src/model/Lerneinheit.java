@@ -2,7 +2,7 @@ package model;
 
 import lang.I18n;
 
-enum Lerneinheit {
+public enum Lerneinheit {
     EINHEIT, KAPITEL, LEKTION, KARTEN, MODUL, ALTKLAUSUR;
 
     @Override

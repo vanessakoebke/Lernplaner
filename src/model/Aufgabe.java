@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Aufgabe {
-    private String typ;
     private Integer id;
     private String titel;
     private String beschreibung;
@@ -17,14 +16,13 @@ public abstract class Aufgabe {
     private Modul modul;
     private List<Aufgabe> teilaufgaben = new ArrayList<Aufgabe>();
     
-    public Aufgabe(String typ, String titel, String beschreibung, LocalDate ende, LocalDate start, int status, Modul modul) {
-        this.typ = typ;
+    public Aufgabe(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul) {
         this.id = null;
         this.titel = titel;
         this.beschreibung = beschreibung;
         this.ende = ende;
         this.start = start;
-        this.status = Status.fromInt(status);
+        this.status = status;
         this.tageBisFaellig =  ende == null ? 200 : ChronoUnit.DAYS.between(LocalDate.now(), ende);
         this.modul = modul;
     }
@@ -124,5 +122,5 @@ public abstract class Aufgabe {
         this.id = id;
     }
     
-    public abstract String getTyp();
+    public abstract Aufgabentyp getTyp();
 }

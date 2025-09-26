@@ -1,16 +1,13 @@
 package service;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import lang.I18n;
 import lang.Sprache;
@@ -19,22 +16,12 @@ import util.LocalDateAdapter;
 import util.RuntimeTypeAdapterFactory;
 
 public class Persistenz {
-    private static final String DATEI_NAME_AUFGABEN = "data/aufgaben.json";
     private static final String DATEI_NAME_EINSTELLUNGEN = "data/settings.json";
     private Gson gson;
 
     public Persistenz() {
-        // Adapter für Unterklassen von Aufgabe
-        RuntimeTypeAdapterFactory<Aufgabe> aufgabeAdapter =
-            RuntimeTypeAdapterFactory.of(Aufgabe.class, "typJson") // Feldname "typ" wird ins JSON geschrieben
-                .registerSubtype(AufgabeAllgemein.class, "allgemein")
-                .registerSubtype(AufgabeDurcharbeiten.class, "durcharbeiten")
-                .registerSubtype(AufgabeEA.class, "ea")
-                .registerSubtype(AufgabeAltklausur.class, "altklausur");
-
         gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            .registerTypeAdapterFactory(aufgabeAdapter) // <--- hier wird es eingebunden
             .setPrettyPrinting()
             .create();
     }

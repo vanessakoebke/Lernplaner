@@ -24,6 +24,12 @@ public class NeueAufgabe extends JFrame {
         buttonHinzu.addActionListener(e -> {
             Aufgabe aufgabe = eingabePanel.getAufgabe();
             aufgabenAnsicht.addAufgabe(aufgabe); // Callback an Main
+            if (aufgabe.getId() == null) {
+                DatenbankService db = new DatenbankService();
+                db.init();
+                db.upsertAufgabe(aufgabe);
+            }
+
             this.dispose();
         });
 

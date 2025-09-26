@@ -10,7 +10,7 @@ public class AufgabeAllgemein extends Aufgabe implements Serializable {
 
 
     public AufgabeAllgemein(String titel, String beschreibung, LocalDate ende) {
-        this(titel, beschreibung, ende, LocalDate.now(),  0, null);
+        this(titel, beschreibung, ende, LocalDate.now(),  Status.NEU, null);
     }
 
     public AufgabeAllgemein(String titel, String beschreibung) {
@@ -21,8 +21,8 @@ public class AufgabeAllgemein extends Aufgabe implements Serializable {
         this(titel, null, ende);
     }
     
-    public AufgabeAllgemein(String titel, String beschreibung, LocalDate ende, LocalDate start, int status, Modul modul) {
-        super("allgemein", titel, beschreibung, ende, start, status, modul);
+    public AufgabeAllgemein(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul) {
+        super(titel, beschreibung, ende, start, status, modul);
     }
 
 
@@ -32,8 +32,8 @@ public class AufgabeAllgemein extends Aufgabe implements Serializable {
     }
     
     @Override
-    public String getTyp() {
-        return I18n.t("model.Aufgabentyp.Allgemein");
+    public Aufgabentyp getTyp() {
+        return Aufgabentyp.ALLGEMEIN;
     }
 
 }

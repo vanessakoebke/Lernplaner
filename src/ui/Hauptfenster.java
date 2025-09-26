@@ -9,9 +9,8 @@ import javax.swing.*;
 import javax.swing.table.TableColumn;
 
 import lang.I18n;
-import model.Einstellungen;
 import model.Status;
-import service.*;
+import service.Control;
 import ui.buttons.DeleteButton;
 import ui.buttons.EditButton;
 import util.FALoader;
@@ -81,6 +80,9 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         // Button neue Aufgabe
         JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
         buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabenAnsicht, control));
+        //Button Fortschritt anzeigen
+        JButton buttonFortschritt = new JButton(I18n.t("ui.Fortschritt.FortschrittAnzeigen"));
+        buttonFortschritt.addActionListener(e -> new Fortschritt(control));        
         // Button Einstellungen
         JButton buttonEinstellungen = new JButton("\uf013");
         buttonEinstellungen.setPreferredSize(new java.awt.Dimension(25, 25));

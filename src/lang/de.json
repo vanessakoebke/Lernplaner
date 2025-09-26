@@ -51,6 +51,10 @@
 		"Abgeschlossen": "Abgeschlossen",
 		"Note": "Note"
 	},
+	"Fortschritt": {
+		"FortschrittAnzeigen": "Fortschritt anzeigen",
+		"Fortschritt": "Fortschritt"
+	},
 	"Kalender": {
 		"Heute": "Heute",
 		"Monat": "Monat",
@@ -63,9 +67,12 @@
 	"StatusErledigt": "erledigt",
 	"Module": "Module",
 	"ModuleVerwalten": "Module verwalten",
+	"Ergebnis": "Ergebnis",
+	"Semester": "Semester",
 	"Lerneinheiten": {
 		"Seiten": "Seiten",
 		"Einheit": "Einheit",
+		"Einheiten": "Einheiten",
 		"Kapitel": "Kapitel",
 		"Lektion": "Lektion",			
 		"Karten": "Karteikarten",
@@ -77,6 +84,8 @@
 		"Durcharbeiten": "Skript durcharbeiten und zusammenfassen",
 		"Wiederholen": "Wiederholen",			
 		"EA": "Einsendeaufgabe",
+		"EA_abr": "EA",
+		"Altklausur": "Altklausur",
 		"Allgemein": "Allgemein",
 		"Modul": "Modul"
 		}

@@ -54,7 +54,7 @@ public class AufgabenManager {
         int seitenProLektion = seiten / 7;
         int tageProLektion = (int) Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), ende));;
         for (int i = 1; i <=7; i++) {
-            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, "", ende, LocalDate.now().plusDays(tageProLektion * (i-1)), 0, modul, seitenProLektion));
+            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, "", ende, LocalDate.now().plusDays(tageProLektion * (i-1)), Status.NEU, modul, seitenProLektion));
         }
     }
     
@@ -62,7 +62,7 @@ public class AufgabenManager {
         LocalDate ende = modul.getKlausurTermin().minusDays(modul.getTageWiederholen());
         int tageProLektion = (int) Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), ende));
         for (int i = 1; i <=seiten.length; i++) {
-            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, "", LocalDate.now().plusDays(tageProLektion * i), LocalDate.now().plusDays(tageProLektion * (i-1)), i, i, modul, seiten[i-1]));
+            aufgabenListe.add(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Durcharbeiten") + ": " + I18n.t("model.Lerneinheiten.Lektion") + " " + i, "", LocalDate.now().plusDays(tageProLektion * i), LocalDate.now().plusDays(tageProLektion * (i-1)),  Status.NEU, modul, seiten[i-1]));
         }
     }
     
@@ -70,7 +70,7 @@ public class AufgabenManager {
         int tageProKlausur = (int) Math.abs(ChronoUnit.DAYS.between(LocalDate.now(), modul.getKlausurTermin()));
         LocalDate start = modul.getKlausurTermin().minusDays(modul.getTageWiederholen());
         for (int i = 1; i<= altklausuren.size(); i++) {
-            aufgabenListe.add(new AufgabeAltklausur(start.plusDays(tageProKlausur), start, modul, altklausuren.get(i-1)));
+            aufgabenListe.add(new AufgabeAltklausur(altklausuren.get(i-1), "", start.plusDays(tageProKlausur), start, Status.NEU, modul, ""));
             start = start.plusDays(tageProKlausur);
         }
     }
@@ -79,7 +79,7 @@ public class AufgabenManager {
         LocalDate start = LocalDate.now();
         for (int i =1; i <= eas.size(); i++) {
             LocalDate ende = eas.get(i-1);
-            aufgabenListe.add(new AufgabeEA(i, ende, start, modul));
+            aufgabenListe.add(new AufgabeEA(I18n.t("Model.Aufgabentyp.EA") + ": " + String.valueOf(i), null, ende, start, Status.NEU, modul, null));
             start = ende;
         }
     }

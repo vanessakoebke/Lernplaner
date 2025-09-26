@@ -7,9 +7,9 @@ import lang.I18n;
 public class AufgabeEA extends Aufgabe {
     private String ergebnis;
 
-    public AufgabeEA(int nummer, LocalDate end, LocalDate start, Modul modul) {
-        super("ea", I18n.t("model.Aufgabentyp.EA") + " " + nummer, "", end, start, 0, modul);
-        this.ergebnis = null;
+    public AufgabeEA(String nummer, String beschreibung, LocalDate end, LocalDate start, Status status, Modul modul, String ergebnis) {
+        super(I18n.t("model.Aufgabentyp.EA") + " " + nummer, "", end, start, status, modul);
+        this.ergebnis = ergebnis;
     }
     
     public String getErgebnis() {
@@ -21,8 +21,8 @@ public class AufgabeEA extends Aufgabe {
     }
     
     @Override
-    public String getTyp() {
-        return I18n.t("model.Aufgabentyp.EA");
+    public Aufgabentyp getTyp() {
+        return Aufgabentyp.EA;
     }
     
 
