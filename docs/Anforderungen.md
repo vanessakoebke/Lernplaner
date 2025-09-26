@@ -10,29 +10,31 @@
 - [x] Übersetzbarkeit implementieren [#7]
 
 ## Version 1.1
+- [x] Persistenz über Datenbank [#29]
 - [x] Module anlegen und verwalten [#8]
 - [x] Aufgaben Modulen zuweisen [#9]
-- [ ] Unterscheidung verschiedener Aufgabentypen
+- [x] Unterscheidung verschiedener Aufgabentypen
   - [x] Allgemein [#10]
-  - [ ] Lesen und Zusammenfassen [#11]
-  - [ ] Einsendeaufgabe bearbeiten [#12]
-  - [ ] Wiederholen [#13]
-  - [ ] Altklausuren [#14]
+  - [x] Lesen und Zusammenfassen [#11]
+  - [x] Einsendeaufgabe bearbeiten [#12]
+  - [x] Wiederholen [#13]
+  - [x] Altklausuren [#14]
      
 ## Version 1.2
 - [ ] Modul einplanen [#15]
   - [x] Klausurtermin anlegen [#17]
   - [ ] zugehörige Aufgaben planen anhand von Seitenzahl und verfügbarer Zeit [#18]
-- [ ] Aufgabenarchiv für erledigte Aufgaben [#19]
+- [ ] Speichern- und Laden-Buttons [#25]
+- [ ] Fortschrittsansicht [#35]
+
 
 
 ## Anforderungen mittelfristig
-- [ ] Speichern- und Laden-Buttons [#25]
+- [ ] Aufgabenarchiv für erledigte Aufgaben [#19]
 - [ ] verbesserte GUI (noch zu definieren)
 - [ ] Aufgabenliste filtern [#26]
 - [ ] Aufgabenliste sortieren [#27]
 - [ ] Aufgaben priorisieren [#28]
-- [ ] Persistenz über Datenbank [#29]
 - [ ] Ansicht tägliche Aufgaben [#30]
 - [ ] Ansicht wöchentliche Aufgaben [#31]
 - [ ] Übersetzung [#32]
