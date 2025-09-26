@@ -5,7 +5,7 @@
 ## Features
 
 - Aufgaben hinzufügen, bearbeiten und löschen
-- Speicherung der Aufgaben in einer lokalen JSON-Datei
+- Speicherung der Aufgaben in einer lokalen Datenbank-Datei
 
 ## Anforderungen
 
@@ -14,6 +14,11 @@
 
 ## Installation
 
+### Kompilierte Version
+
+- Eine fertige JAR-Datei ist verfübar.  
+- Alternativ kann das Projekt lokal gebaut werden (siehe folgender Punkt).
+
 ### Aus dem Quellcode
 
 1. Repository klonen:  
@@ -21,16 +26,11 @@
 2. In Eclipse oder IntelliJ importieren (als Maven/Java-Projekt).  
 3. Projekt bauen und ausführen (`ui.Main` als Main-Klasse).
 
-### Kompilierte Version
-
-- Eine fertige JAR-Datei ist derzeit **nicht verfügbar**.  
-- Alternativ kann das Projekt lokal gebaut werden (siehe oben).
-
 ## Nutzung
 
-- Programm starten (`ui.Main`)  
+- Programm starten: Doppelklick auf die jar oder Main.java starten aus einer IDE
 - Aufgaben über die GUI verwalten  
-- Änderungen werden automatisch in `data/lernplaner.json` gespeichert
+- Änderungen werden automatisch in `data/Lernplaner.db` gespeichert
 
 ## Hinweise
 
