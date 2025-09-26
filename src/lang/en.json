@@ -1,0 +1,64 @@
+{
+  "Common": {
+	"Version": "Version",
+	"Sprache": "Language",
+	"Einstellungen": "Settings",
+	"de": "German",
+	"en": "English",
+	"Datumsformat_Java": "yyyy-MM-dd",
+    "ButtonAbbrechen": "Cancel",
+    "ButtonHinzufuegen": "Add",
+	"ButtonAnwenden": "Apply",
+    "ButtonOk": "Ok",
+	"Hinweis": {
+		"Neustart": "Please restart the program to see the changes."
+	},
+    "Errors": {
+      "Fehler": "Error",
+      "UngueltigesDatum": "Invalid date format! Please use a date in YYYY-MM-DD format.",
+      "SpeichernFehler": "Unable to save"
+    }
+  },
+  "ui": {
+    "Common": {
+      "Aufgabenname": "Task name",
+      "Beschreibung": "Description",
+      "Faelligkeit": "Due on",
+      "Status": "Status"
+    },
+    "Main": {
+      "FensterTitel": "Learning manager",
+      "ButtonNeueAufgabe": "Add task"
+    },
+    "NeueAufgabe": {
+      "FensterTitel": "New task"
+    },
+	"AufgabeBearbeiten": {
+	  "FensterTitel": "Edit task"	
+	},
+    "EingabePanel": {
+      "Datumsformat": "YYYY-MM-DD"
+    }
+  },
+  "model": {
+	"StatusNeu": "not started",
+	"StatusAngefangen": "started",
+	"StatusErledigt": "done",
+	"Module": "Module",
+	"ModuleVerwalten": "Manage modules",
+		"Lerneinheiten": {
+			"Einheit": "Unit",
+			"Kapitel": "Chapter",
+			"Lektion": "Lesson",
+			"Karten": "Flash cards"
+		},
+		"Aufgabentyp": {
+			"Aufgabe": "Task",
+			"Durcharbeiten": "Read and summarize",
+			"Wiederholen": "Repeat",
+			"Einsendeaufgabe": "Homework",
+			"Allgemein": "General",
+			"Modul": "Module"
+		}
+  }
+}

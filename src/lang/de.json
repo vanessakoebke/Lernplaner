@@ -1,19 +1,31 @@
 {
   "Common": {
+	"Version": "Version",
+	"Sprache": "Sprache",
+	"Einstellungen": "Einstellungen",
+	"de": "Deutsch",
+	"en": "Englisch",
 	"Datumsformat_Java": "dd.MM.yyyy",
     "ButtonAbbrechen": "Abbrechen",
     "ButtonHinzufuegen": "Hinzufügen",
     "ButtonOk": "Ok",
+	"ButtonAnwenden": "Anwenden",
+	"Hinweis": {
+		"Neustart": "Programm neustarten, damit die Änderungen aktiv werden."
+	},
     "Errors": {
-      "Fehler": "Fehler",
-      "UngueltigesDatum": "Ungültiges Datum! Bitte ein Datum im Format TT.MM.JJJJ eingeben.",
-      "SpeichernFehler": "Speichern nicht möglich"
+		"Warnung": "Warnung",
+      	"Fehler": "Fehler",
+     	 "UngueltigesDatum": "Ungültiges Datum! Bitte ein Datum im Format TT.MM.JJJJ eingeben.",
+		 "UngueltigeSeiten": "Ungültige Seitenanzahl. Bitte gib eine Zahl ein.",
+      	"SpeichernFehler": "Speichern nicht möglich"
     }
   },
   "ui": {
     "Common": {
       "Aufgabenname": "Aufgabenname",
       "Beschreibung": "Beschreibung",
+	  "Start": "Start am",
       "Faelligkeit": "Fällig am",
       "Status": "Status"
     },
@@ -29,11 +41,53 @@
 	},
     "EingabePanel": {
       "Datumsformat": "TT.MM.JJJJ"
-    }
+    },
+	"Modulverwaltung": {
+		"Titel": "Modulverwaltung",
+		"AktuelleModule": "Aktuelle Module",
+		"AlteModule": "Abgeschlossene Module",
+		"ModulHinzu": "Modul hinzufügen",
+		"Klausurtermin": "Klausurtermin",
+		"Abgeschlossen": "Abgeschlossen",
+		"Note": "Note"
+	},
+	"Fortschritt": {
+		"FortschrittAnzeigen": "Fortschritt anzeigen",
+		"Fortschritt": "Fortschritt"
+	},
+	"Kalender": {
+		"Heute": "Heute",
+		"Monat": "Monat",
+		"Jahr": "Jahr"
+	}
   },
   "model": {
 	"StatusNeu": "noch nicht begonnen",
 	"StatusAngefangen": "begonnen",
-	"StatusErledigt": "erledigt"
+	"StatusErledigt": "erledigt",
+	"Module": "Module",
+	"ModuleVerwalten": "Module verwalten",
+	"Ergebnis": "Ergebnis",
+	"Semester": "Semester",
+	"Lerneinheiten": {
+		"Seiten": "Seiten",
+		"Einheit": "Einheit",
+		"Einheiten": "Einheiten",
+		"Kapitel": "Kapitel",
+		"Lektion": "Lektion",			
+		"Karten": "Karteikarten",
+		"Altklausur": "Altklausur"
+		},
+	"Aufgabentyp": {
+		"Typ": "Aufgabentyp",
+		"Aufgabe": "Aufgabe",
+		"Durcharbeiten": "Skript durcharbeiten und zusammenfassen",
+		"Wiederholen": "Wiederholen",			
+		"EA": "Einsendeaufgabe",
+		"EA_abr": "EA",
+		"Altklausur": "Altklausur",
+		"Allgemein": "Allgemein",
+		"Modul": "Modul"
+		}
   }
 }

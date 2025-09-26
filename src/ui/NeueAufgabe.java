@@ -9,15 +9,13 @@ import service.*;
 import ui.buttons.*;
 
 public class NeueAufgabe extends JFrame {
-
- 
     private AufgabenAnsicht aufgabenAnsicht;
     private EingabePanel eingabePanel;
 
-    public NeueAufgabe(AufgabenAnsicht aufgabenAnsicht) {
+    public NeueAufgabe(AufgabenAnsicht aufgabenAnsicht, Control control) {
         super(I18n.t("ui.NeueAufgabe.FensterTitel"));
         this.aufgabenAnsicht = aufgabenAnsicht;
-        this.eingabePanel = new EingabePanel();
+        this.eingabePanel = new EingabePanel(control);
 
         // Buttons
         JButton buttonAbbrechen = new CancelButton();
@@ -26,6 +24,12 @@ public class NeueAufgabe extends JFrame {
         buttonHinzu.addActionListener(e -> {
             Aufgabe aufgabe = eingabePanel.getAufgabe();
             aufgabenAnsicht.addAufgabe(aufgabe); // Callback an Main
+            if (aufgabe.getId() == null) {
+                DatenbankService db = new DatenbankService();
+                db.init();
+                db.upsertAufgabe(aufgabe);
+            }
+
             this.dispose();
         });
 
@@ -37,7 +41,7 @@ public class NeueAufgabe extends JFrame {
         add(eingabePanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(450, 300);
+        setSize(500, 600);
         setLocationRelativeTo(null);
         setVisible(true);
     }
