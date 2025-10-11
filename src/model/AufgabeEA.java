@@ -7,8 +7,8 @@ import lang.I18n;
 public class AufgabeEA extends Aufgabe {
     private String ergebnis;
 
-    public AufgabeEA(String nummer, String beschreibung, LocalDate end, LocalDate start, Status status, Modul modul, String ergebnis) {
-        super(I18n.t("model.Aufgabentyp.EA") + " " + nummer, "", end, start, status, modul);
+    public AufgabeEA(String titel, String beschreibung, LocalDate end, LocalDate start, Status status, Modul modul, String ergebnis) {
+        super(titel, beschreibung, end, start, status, modul);
         this.ergebnis = ergebnis;
     }
     

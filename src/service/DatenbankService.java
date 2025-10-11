@@ -1,5 +1,9 @@
 package service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -67,7 +71,7 @@ public class DatenbankService {
 
                 int idx = 1;
                 pstmt.setString(idx++, aufgabe.getTyp().name());
-                pstmt.setString(idx++, aufgabe.getTitel());
+                pstmt.setString(idx++, aufgabe.getTitel().toString());
 
                 if (aufgabe.getBeschreibung() != null) {
                     pstmt.setString(idx++, aufgabe.getBeschreibung());
@@ -253,8 +257,9 @@ public class DatenbankService {
                 String ergebnis = rs.getString("ergebnis");
                 int einheiten = rs.getInt("einheiten");
                 String einheitstypString = rs.getString("einheitstyp");
-                Lerneinheit einheitstyp;
+                Lerneinheit einheitstyp = Lerneinheit.EINHEIT;
                 switch (einheitstypString) {
+                case null: einheitstyp =  Lerneinheit.EINHEIT;
                 case "EINHEIT": einheitstyp = Lerneinheit.EINHEIT;
                 case "KAPITEL": einheitstyp = Lerneinheit.KAPITEL;
                 case "LEKTION": einheitstyp = Lerneinheit.LEKTION;
@@ -397,6 +402,26 @@ public class DatenbankService {
         }
 
         return modul;
+    }
+    
+    public void exportDatabase(File zielDatei) {
+        File quelle = new File("data/Lernplaner.db");
+        try {
+            Files.copy(quelle.toPath(), zielDatei.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Datenbank exportiert nach: " + zielDatei.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void importDatabase(File quellDatei) {
+        File ziel = new File("data/Lernplaner.db");
+        try {
+            Files.copy(quellDatei.toPath(), ziel.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Datenbank importiert von: " + quellDatei.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -1,9 +1,9 @@
 package ui;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -89,13 +89,54 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         buttonEinstellungen.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 9));
         buttonEinstellungen.setFont(FALoader.loadFontAwesome());
         buttonEinstellungen.addActionListener(e -> new EinstellungenAnsicht(control));
+        
+        //Exportieren-Button
+        JButton buttonSpeichern = new JButton("\uf0c7");
+        buttonSpeichern.setPreferredSize(new java.awt.Dimension(25, 25));
+        buttonSpeichern.setBorder(BorderFactory.createEmptyBorder(0, 9, 0, 0));
+        buttonSpeichern.setFont(FALoader.loadFontAwesome());
+        buttonSpeichern.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("data"));
+            chooser.setDialogTitle("Datenbank exportieren");
+            chooser.setSelectedFile(new File("Lernplaner_backup.db"));
+            int result = chooser.showSaveDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File ziel = chooser.getSelectedFile();
+                control.getDb().exportDatabase(ziel);
+            }
+        });
+        
+        //Importieren-Button
+        JButton loadButton = new JButton("\uf07c");
+        loadButton.setPreferredSize(new java.awt.Dimension(25, 25));
+        loadButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        loadButton.setFont(FALoader.loadFontAwesome());
+        loadButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("data"));
+            chooser.setDialogTitle("Datenbank importieren");
+            int result = chooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File quelle = chooser.getSelectedFile();
+                control.getDb().importDatabase(quelle);
+                control.reloadData();
+                aufgabenAnsicht.refresh();
+
+            }
+        });
+
         // Unteres Panel
         JPanel southPanel = new JPanel();
         southPanel.add(buttonNeueAufgabe);
         // Oberes Panel
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BorderLayout());
+        JPanel saveLoad = new JPanel(new FlowLayout());
+        saveLoad.add(buttonSpeichern);
+        saveLoad.add(loadButton);
         northPanel.add(buttonEinstellungen, BorderLayout.EAST);
+        northPanel.add(saveLoad, BorderLayout.WEST);
         add(northPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(southPanel, BorderLayout.SOUTH);

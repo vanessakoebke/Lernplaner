@@ -277,6 +277,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
                     return new AufgabeDurcharbeiten(titelFeld.getText(), beschreibungFeld.getText(),
                             ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), seiten);
                 case EA:
+                    System.out.println(titelFeld.getText());
                     return new AufgabeEA(titelFeld.getText(), beschreibungFeld.getText(),
                             ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), ergebnisFeld.getText());
                 case ALTKLAUSUR:
