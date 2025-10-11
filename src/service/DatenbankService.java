@@ -247,10 +247,18 @@ public class DatenbankService {
                 int statusInt = rs.getInt("status");
                 Status status;
                 switch (statusInt) {
-                case 0: status = Status.NEU;
-                case 1: status =  Status.ANGEFANGEN;
-                case 2: status =  Status.ERLEDIGT;
-                default: status =  Status.NEU;
+                case 0: 
+                    status = Status.NEU;
+                    break;
+                case 1: 
+                    status =  Status.ANGEFANGEN;
+                    break;
+                case 2: 
+                    status =  Status.ERLEDIGT;
+                    break;
+                default: 
+                    status =  Status.NEU;
+                    break;
                 }
                 Integer modulId = rs.getInt("modulId");
                 int seiten = rs.getInt("seiten");
@@ -260,12 +268,24 @@ public class DatenbankService {
                 Lerneinheit einheitstyp = Lerneinheit.EINHEIT;
                 switch (einheitstypString) {
                 case null: einheitstyp =  Lerneinheit.EINHEIT;
-                case "EINHEIT": einheitstyp = Lerneinheit.EINHEIT;
-                case "KAPITEL": einheitstyp = Lerneinheit.KAPITEL;
-                case "LEKTION": einheitstyp = Lerneinheit.LEKTION;
-                case "KARTEN": einheitstyp = Lerneinheit.KARTEN;
-                case "MODUL": einheitstyp = Lerneinheit.MODUL;
-                case "ALTKLAUSUR": einheitstyp = Lerneinheit.ALTKLAUSUR;
+                case "EINHEIT": 
+                    einheitstyp = Lerneinheit.EINHEIT;
+                    break;
+                case "KAPITEL": 
+                    einheitstyp = Lerneinheit.KAPITEL;
+                    break;
+                case "LEKTION": 
+                    einheitstyp = Lerneinheit.LEKTION;
+                    break;
+                case "KARTEN": 
+                    einheitstyp = Lerneinheit.KARTEN;
+                    break;
+                case "MODUL": 
+                    einheitstyp = Lerneinheit.MODUL;
+                    break;
+                case "ALTKLAUSUR": 
+                    einheitstyp = Lerneinheit.ALTKLAUSUR;
+                    break;
                 default: einheitstyp =  Lerneinheit.EINHEIT;
                 }
 

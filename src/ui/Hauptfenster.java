@@ -1,85 +1,29 @@
 package ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 
 import lang.I18n;
-import model.Status;
 import service.Control;
-import ui.buttons.DeleteButton;
-import ui.buttons.EditButton;
 import util.FALoader;
 
 public class Hauptfenster extends JFrame implements IAnsicht {
-    private AufgabenAnsicht aufgabenAnsicht;
     private Control control;
+    private CenterPanel center;
+    private int centerNr;
+    
 
     public Hauptfenster(Control control) {
         super(I18n.t("ui.Main.FensterTitel"));
-        this.control = control;
-        // Aufgabenansicht (TableModel)
-         this.aufgabenAnsicht = new AufgabenAnsicht(control);
-        // JTable
-        JTable tabelle = new JTable(aufgabenAnsicht);
-        tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));
-        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        // Status-Dropdown
-        JComboBox<Status> statusCombo = new JComboBox<>(Status.values());
-        tabelle.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(statusCombo));
-        // Spalte "Bearbeiten"
-        EditButton editButton = new EditButton();
-        tabelle.getColumnModel().getColumn(6).setCellRenderer(editButton.getRenderer());
-        tabelle.getColumnModel().getColumn(6).setCellEditor(editButton.getEditor(e -> {
-            new AufgabeBearbeiten(aufgabenAnsicht, tabelle.getEditingRow(), control);
-        }));
-        // Spaltenbreite anpassen
-        JButton tempButton = editButton.getButton();
-        int buttonBreite = tempButton.getPreferredSize().width + 40; // Puffer hinzufügen
-        TableColumn col = tabelle.getColumnModel().getColumn(6);
-        col.setPreferredWidth(buttonBreite);
-        col.setMaxWidth(buttonBreite);
-        col.setMinWidth(buttonBreite);
-        // Spalte "Löschen"
-        DeleteButton deleteButton = new DeleteButton();
-        tabelle.getColumnModel().getColumn(7).setCellRenderer(deleteButton.getRenderer());
-        tabelle.getColumnModel().getColumn(7).setCellEditor(deleteButton.getEditor(e -> {
-            int row = tabelle.getSelectedRow();
-            int id = aufgabenAnsicht.getAufgabe(row).getId();
-            if (JOptionPane.showConfirmDialog(null, "Aufgabe wirklich löschen?", "Bestätigung", // TODO Texte aus I18n
-                                                                                                // holen
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
-                aufgabenAnsicht.removeAufgabe(row, id);
-            }
-        }));
-        // Spaltenbreite anpassen
-        tempButton = deleteButton.getButton();
-        buttonBreite = tempButton.getPreferredSize().width + 40; // Puffer hinzufügen
-        col = tabelle.getColumnModel().getColumn(7);
-        col.setPreferredWidth(buttonBreite);
-        col.setMaxWidth(buttonBreite);
-        col.setMinWidth(buttonBreite);
-        JScrollPane scrollPane = new JScrollPane(tabelle);
-        // Hauptfenster
-        setSize(900, 600);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                dispose();
-                control.getPersistenz().speichern(control.getAm().getAufgabenListe());
-                control.getPersistenz().speichern(control.getEinstellungen());
-                System.exit(0);
-            }
-        });
+        centerNr = 0;
         // Button neue Aufgabe
         JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
-        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(aufgabenAnsicht, control));
+        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(center, control));
         //Button Fortschritt anzeigen
         JButton buttonFortschritt = new JButton(I18n.t("ui.Fortschritt.FortschrittAnzeigen"));
         buttonFortschritt.addActionListener(e -> new Fortschritt(control));        
@@ -121,11 +65,32 @@ public class Hauptfenster extends JFrame implements IAnsicht {
                 File quelle = chooser.getSelectedFile();
                 control.getDb().importDatabase(quelle);
                 control.reloadData();
-                aufgabenAnsicht.refresh();
+                center.refresh();
 
             }
         });
+        
+        // Hauptfenster
+        setSize(900, 600);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+                control.getPersistenz().speichern(control.getAm().getAufgabenListe());
+                control.getPersistenz().speichern(control.getEinstellungen());
+                System.exit(0);
+            }
+        });
 
+        //Center Panel
+        center = new CenterPanel(control);
+        add(center, BorderLayout.CENTER);
+        
+        //Seitliches Panel
+        JPanel westPanel = new NavigationsPanel(this);
+        
         // Unteres Panel
         JPanel southPanel = new JPanel();
         southPanel.add(buttonNeueAufgabe);
@@ -138,14 +103,24 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         northPanel.add(buttonEinstellungen, BorderLayout.EAST);
         northPanel.add(saveLoad, BorderLayout.WEST);
         add(northPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        add(westPanel, BorderLayout.WEST);
+        add(center, BorderLayout.CENTER);
         add(southPanel, BorderLayout.SOUTH);
         setVisible(true);
     }
 
     @Override
     public void refresh() {
-        aufgabenAnsicht.refresh();
-        
+        center.showPanel(centerNr); // CenterPanel hat Methode, die Inhalt je nach centerNr tauscht
+    }
+
+    
+    void setCenter(int i) {
+        this.centerNr = i;
+        refresh();
+    }
+    
+    Control getControl() {
+        return control;
     }
 }

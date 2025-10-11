@@ -3,6 +3,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import lang.I18n;
 import model.*;
@@ -37,6 +39,16 @@ public class AufgabenManager {
 
     public List<Aufgabe> getAufgabenListe() {
         return aufgabenListe;
+    }
+    
+    public List<Aufgabe> getAktuelle(){
+        List<Aufgabe> ergebnis = filter(a -> a.getStatus() != Status.ERLEDIGT);
+        return ergebnis;
+    }
+    
+    public List<Aufgabe> getAlte(){
+        List<Aufgabe> ergebnis = filter(a -> a.getStatus() == Status.ERLEDIGT);
+        return ergebnis;
     }
     
     public List<Aufgabe> getAufgabenListe(Modul modul) {
@@ -82,6 +94,12 @@ public class AufgabenManager {
             aufgabenListe.add(new AufgabeEA(I18n.t("Model.Aufgabentyp.EA") + ": " + String.valueOf(i), null, ende, start, Status.NEU, modul, null));
             start = ende;
         }
+    }
+    
+    public List<Aufgabe> filter(Predicate<Aufgabe> kriterium) {
+        return aufgabenListe.stream()
+            .filter(kriterium)
+            .collect(Collectors.toList());
     }
     
 }
