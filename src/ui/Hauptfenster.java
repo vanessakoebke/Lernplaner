@@ -24,6 +24,11 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         // Button neue Aufgabe
         JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
         buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(center, control));
+        
+        //Button Modul einplanen
+        JButton buttonModulPlanen = new JButton(I18n.t("ui.Main.ButtonModulEinplanen"));
+        buttonModulPlanen.addActionListener(e -> new ModulEinplanen(control, this));
+        
         //Button Fortschritt anzeigen
         JButton buttonFortschritt = new JButton(I18n.t("ui.Fortschritt.FortschrittAnzeigen"));
         buttonFortschritt.addActionListener(e -> new Fortschritt(control));        
@@ -92,8 +97,9 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         JPanel westPanel = new NavigationsPanel(this);
         
         // Unteres Panel
-        JPanel southPanel = new JPanel();
-        southPanel.add(buttonNeueAufgabe);
+        JPanel southPanel = new JPanel(new FlowLayout());
+        southPanel.add(buttonNeueAufgabe, 0);
+        southPanel.add(buttonModulPlanen, 1);
         // Oberes Panel
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BorderLayout());

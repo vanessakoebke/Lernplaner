@@ -14,6 +14,7 @@ import org.jdatepicker.impl.*;
 import lang.I18n;
 import model.*;
 import service.Control;
+import service.Kalender;
 import util.CalendarFormatter;
 
 public class EingabePanel extends JPanel implements IAnsicht {
@@ -109,7 +110,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
         // Startdatum
         JLabel startLabel = new JLabel(I18n.t("ui.Common.Start"));
         UtilDateModel startModel = new UtilDateModel();
-        JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, getCalendarProperties());
+        JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
         startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
         gbc.gridx = 0;
         gbc.gridy = 12;
@@ -120,7 +121,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
         // Enddatum
         JLabel endeLabel = new JLabel(I18n.t("ui.Common.Faelligkeit"));
         UtilDateModel endeModel = new UtilDateModel();
-        JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, getCalendarProperties());
+        JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
         endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
         gbc.gridx = 0;
         gbc.gridy = 15;
@@ -246,13 +247,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
     
     }
 
-    private Properties getCalendarProperties() {
-        Properties p = new Properties();
-        p.put("text.today", I18n.t("ui.Kalender.Heute"));
-        p.put("text.month", I18n.t("ui.Kalender.Monat"));
-        p.put("text.year", I18n.t("ui.Kalender.Jahr"));
-        return p;
-    }
 
     public Aufgabe getAufgabe() {
         Date startDate = (Date) startFeld.getModel().getValue();

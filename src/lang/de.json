@@ -31,7 +31,8 @@
     },
     "Main": {
       "FensterTitel": "Lernplaner",
-      "ButtonNeueAufgabe": "Aufgabe hinzufügen"
+      "ButtonNeueAufgabe": "Aufgabe hinzufügen",
+	  "ButtonModulEinplanen": "Modul einplanen"
     },
     "NeueAufgabe": {
       "FensterTitel": "Neue Aufgabe"
@@ -54,6 +55,11 @@
 	"Fortschritt": {
 		"FortschrittAnzeigen": "Fortschritt anzeigen",
 		"Fortschritt": "Fortschritt"
+	},
+	"ModulEinplanen": {
+		"WelcheAufgaben": "Welche Aufgaben möchtest du einplanen?",
+		"ModulWaehlen": "Welches Modul möchtest du einplanen?",
+		"ErzeugeAufgaben": "Erzeuge Aufgaben"
 	},
 	"Kalender": {
 		"Heute": "Heute",

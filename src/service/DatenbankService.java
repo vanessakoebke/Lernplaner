@@ -260,7 +260,6 @@ public class DatenbankService {
                     status =  Status.NEU;
                     break;
                 }
-                Integer modulId = rs.getInt("modulId");
                 int seiten = rs.getInt("seiten");
                 String ergebnis = rs.getString("ergebnis");
                 int einheiten = rs.getInt("einheiten");
@@ -288,9 +287,10 @@ public class DatenbankService {
                     break;
                 default: einheitstyp =  Lerneinheit.EINHEIT;
                 }
-
+                
+                int modulId = rs.getInt("modulId");
                 Modul modul = null;
-                if (modulId != null) {
+                if (!rs.wasNull()) {
                     modul = getModul(modulId);
                 }
 
@@ -331,7 +331,7 @@ public class DatenbankService {
 
     public List<Modul> getModule() {
         List<Modul> module = new ArrayList<>();
-        String sql = "SELECT name, klausurTermin, aktuell, note, tageWiederholen FROM Module"; //Tabelle anpassen hier!
+        String sql = "SELECT id, name, klausurTermin, aktuell, note, tageWiederholen FROM module";
         try (Connection conn = connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()) {
@@ -342,7 +342,9 @@ public class DatenbankService {
                 boolean aktuell = rs.getBoolean("aktuell");
                 String note = rs.getString("note");
                 int tageWiederholen = rs.getInt("tageWiederholen");
+                int id = rs.getInt("id");
                 Modul modul = new Modul(name, termin, aktuell, note);
+                modul.setId(id);
                 modul.setTageWiederholen(tageWiederholen);
                 module.add(modul);
             }
@@ -353,33 +355,39 @@ public class DatenbankService {
     }
 
     public void upsertModul(Modul modul) {
-        String sql = "INSERT INTO Module (name, klausurTermin, aktuell, note, tageWiederholen) "                                //Tabelle anpassen hier!
-                + "VALUES (?, ?, ?, ?, ?) " + "ON CONFLICT(name) DO UPDATE SET "
-                + "klausurTermin = excluded.klausurTermin, " + "aktuell = excluded.aktuell, " + "note = excluded.note, "
-                + "tageWiederholen = excluded.tageWiederholen;";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String sqlInsert = "INSERT INTO module (name, klausurTermin, aktuell, note, tageWiederholen) " +
+                "VALUES (?, ?, ?, ?, ?) " +
+                "ON CONFLICT(name) DO UPDATE SET " +
+                "klausurTermin = excluded.klausurTermin, " +
+                "aktuell = excluded.aktuell, " +
+                "note = excluded.note, " +
+                "tageWiederholen = excluded.tageWiederholen " +
+                "RETURNING id;";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sqlInsert)) {
+
             pstmt.setString(1, modul.getName());
             if (modul.getKlausurTermin() != null) {
                 pstmt.setString(2, modul.getKlausurTermin().toString());
             } else {
-                pstmt.setNull(2, java.sql.Types.DATE);
+                pstmt.setNull(2, java.sql.Types.VARCHAR);
             }
             pstmt.setBoolean(3, modul.getAktuell());
-            pstmt.setString(4, modul.getNote()); // kann null sein
+            pstmt.setString(4, modul.getNote());
             pstmt.setInt(5, modul.getTageWiederholen());
-            pstmt.executeUpdate();
-            // ID aus der DB übernehmen (nur wenn neues Modul)
-            if (modul.getId() == null) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        modul.setId(generatedKeys.getInt(1));
-                    }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    modul.setId(rs.getInt("id")); // Hier wird die ID endlich gesetzt!
                 }
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public void deleteModul(Modul modul) {
         if (modul.getId() == null) {
