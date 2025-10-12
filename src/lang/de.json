@@ -24,7 +24,7 @@
   "ui": {
     "Common": {
       "Aufgabenname": "Aufgabenname",
-      "Beschreibung": "Beschreibung",
+      "Beschreibung": "Notizen",
 	  "Start": "Start am",
       "Faelligkeit": "Fällig am",
       "Status": "Status"
@@ -59,7 +59,8 @@
 	"ModulEinplanen": {
 		"WelcheAufgaben": "Welche Aufgaben möchtest du einplanen?",
 		"ModulWaehlen": "Welches Modul möchtest du einplanen?",
-		"ErzeugeAufgaben": "Erzeuge Aufgaben"
+		"ErzeugeAufgaben": "Erzeuge Aufgaben",
+		"AnzEAs": "Anzahl Einsendeaufgaben"
 	},
 	"Kalender": {
 		"Heute": "Heute",
