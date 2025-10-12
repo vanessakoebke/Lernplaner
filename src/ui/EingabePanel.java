@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.swing.*;
 
@@ -337,7 +336,16 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.aufgabe = aufgabe;
         this.neueingabe = false;
 
-        modulFeld.setSelectedItem(aufgabe.getModul());
+     // Modul nach ID suchen und auswählen
+        Modul aufgabenModul = aufgabe.getModul();
+        for (int i = 0; i < modulFeld.getItemCount(); i++) {
+            Modul m = modulFeld.getItemAt(i);
+            if (m.getId() == aufgabenModul.getId()) { // falls du IDs hast
+                modulFeld.setSelectedIndex(i);
+                break;
+            }
+        }
+
         aufgabentypFeld.setSelectedItem(aufgabe.getTyp());
         titelFeld.setText(aufgabe.getTitel());
         beschreibungFeld.setText(aufgabe.getBeschreibung());

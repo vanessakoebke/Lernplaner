@@ -60,7 +60,9 @@
 		"WelcheAufgaben": "Welche Aufgaben möchtest du einplanen?",
 		"ModulWaehlen": "Welches Modul möchtest du einplanen?",
 		"ErzeugeAufgaben": "Erzeuge Aufgaben",
-		"AnzEAs": "Anzahl Einsendeaufgaben"
+		"AnzEAs": "Anzahl Einsendeaufgaben",
+		"AnzAltklausuren": "Anzahl Altklausuren",
+		"StartAltklausuren": "Start Altklausuren"
 	},
 	"Kalender": {
 		"Heute": "Heute",
@@ -71,6 +73,7 @@
   "model": {
 	"StatusNeu": "noch nicht begonnen",
 	"StatusAngefangen": "begonnen",
+	"StatusWartend": "wartend";
 	"StatusErledigt": "erledigt",
 	"Module": "Module",
 	"ModuleVerwalten": "Module verwalten",

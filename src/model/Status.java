@@ -3,12 +3,13 @@ package model;
 import lang.I18n;
 
 public enum Status {
-    NEU, ANGEFANGEN, ERLEDIGT;
+    NEU, ANGEFANGEN, WARTEND, ERLEDIGT;
     @Override
     public String toString() {
         switch (this) {
         case ERLEDIGT: return I18n.t("model.StatusErledigt");
         case ANGEFANGEN: return I18n.t("model.StatusAngefangen");
+        case WARTEND: return I18n.t("model.StatusWartend");
         case NEU: return I18n.t("model.StatusNeu");
         default: return I18n.t("Common.Errors.Fehler");
         }
@@ -18,6 +19,7 @@ public enum Status {
         case 0: return NEU;
         case 1: return ANGEFANGEN;
         case 2: return ERLEDIGT;
+        case 3: return WARTEND;
         default: return NEU;
         }
     }
@@ -25,6 +27,7 @@ public enum Status {
         switch (this) {
         case ERLEDIGT: return 2;
         case ANGEFANGEN: return 1;
+        case WARTEND: return 3;
         case NEU: return 0;
         default: return 0;
         }

@@ -153,6 +153,7 @@ public class ModulEinplanen extends JFrame {
     // ----------------- Panels -----------------
     private abstract class AufgabenSchritte extends JPanel {
         protected List<JPanel> panelListe = new ArrayList<>();
+        protected JScrollPane aufgabenPanel;
 
         protected abstract void addAufgaben();
 
@@ -201,6 +202,109 @@ public class ModulEinplanen extends JFrame {
                 aufgabeI.add(startFeld, BorderLayout.CENTER);
                 aufgabeI.add(endeFeld, BorderLayout.EAST);
                 contentPanel.add(aufgabeI, gbc);
+                gbc.gridy++;
+                panelListe.add(aufgabeI);
+            }
+            // Jetzt das contentPanel in ein ScrollPane einbetten
+            JScrollPane scrollPane = new JScrollPane(contentPanel);
+            scrollPane.setPreferredSize(new Dimension(500, 350));
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            return scrollPane;
+        }
+
+        protected JScrollPane getAufgabenPanel(int anzahl) {
+            // Das eigentliche Panel, das die Aufgaben enthält
+            JPanel contentPanel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(5, 10, 5, 10);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            int offset = 0;
+            panelListe = new ArrayList<>();
+            for (int i = 1; i <= anzahl; i++) {
+                JPanel aufgabeI = new JPanel(new BorderLayout(10, 0));
+                // Titelfeld
+                JTextField titelI = new JTextField(I18n.t("model.Aufgabentyp.EA_abr") + " " + i);
+                titelI.setPreferredSize(new Dimension(150, 25));
+                aufgabeI.add(titelI, BorderLayout.WEST);
+                JDatePickerImpl startFeld;
+                JDatePickerImpl endeFeld;
+                if (anzahl == 7) {
+                    // Startdatum
+                    UtilDateModel startModel = Kalender.getModellMitSemesterdatum(offset);
+                    JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
+                    startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
+                    aufgabeI.add(startFeld, BorderLayout.CENTER);
+                    offset += 14;
+                    // Enddatum
+                    UtilDateModel endeModel = Kalender.getModellMitSemesterdatum(offset);
+                    JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
+                    endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
+                    aufgabeI.add(endeFeld, BorderLayout.EAST);
+                } else {
+                    int zeitProEinheit = Kalender.getTageDurcharbeiten(anzahl);
+                    // Startdatum
+                    UtilDateModel startModel = Kalender.getModellMitSemesterdatum(offset);
+                    JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
+                    startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
+                    offset += zeitProEinheit;
+                    // Enddatum
+                    UtilDateModel endeModel = Kalender.getModellMitSemesterdatum(offset);
+                    JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
+                    endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
+                }
+                aufgabeI.add(startFeld, BorderLayout.CENTER);
+                aufgabeI.add(endeFeld, BorderLayout.EAST);
+                contentPanel.add(aufgabeI, gbc);
+                gbc.gridy++;
+                panelListe.add(aufgabeI);
+            }
+            // Jetzt das contentPanel in ein ScrollPane einbetten
+            JScrollPane scrollPane = new JScrollPane(contentPanel);
+            scrollPane.setPreferredSize(new Dimension(500, 350));
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            return scrollPane;
+        }
+
+        protected JScrollPane getAufgabenPanel(LocalDate start, LocalDate ende, int anzahl) {
+            // Das eigentliche Panel, das die Aufgaben enthält
+            JPanel contentPanel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(5, 10, 5, 10);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            int offset = 0;
+            panelListe = new ArrayList<>();
+            for (int i = 1; i <= anzahl; i++) {
+                JPanel aufgabeI = new JPanel(new BorderLayout(10, 0));
+             // Titelfeld
+                JTextField titelI = new JTextField();
+                titelI.setPreferredSize(new Dimension(150, 25));
+                aufgabeI.add(titelI, BorderLayout.WEST);
+
+                // Startdatum
+                UtilDateModel startModel = new UtilDateModel();
+                startModel.setValue(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                startModel.setSelected(true);
+                JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
+                JDatePickerImpl startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
+
+                // Enddatum
+                UtilDateModel endeModel = new UtilDateModel();
+                endeModel.setValue(Date.from(ende.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                endeModel.setSelected(true);
+                JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
+                JDatePickerImpl endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
+
+                // Komponenten hinzufügen
+                aufgabeI.add(startFeld, BorderLayout.CENTER);
+                aufgabeI.add(endeFeld, BorderLayout.EAST);
+                contentPanel.add(aufgabeI, gbc);
+
                 gbc.gridy++;
                 panelListe.add(aufgabeI);
             }
@@ -271,8 +375,6 @@ public class ModulEinplanen extends JFrame {
     }
 
     private class SchrittDurcharbeiten extends AufgabenSchritte {
-        private JScrollPane aufgabenPanel;
-
         SchrittDurcharbeiten() {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
@@ -339,8 +441,6 @@ public class ModulEinplanen extends JFrame {
     }
 
     private class SchrittEA extends AufgabenSchritte {
-        private JScrollPane aufgabenPanel;
-
         SchrittEA() {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
@@ -397,62 +497,6 @@ public class ModulEinplanen extends JFrame {
                 aufgabenListe.add(ea);
             }
         }
-
-        protected JScrollPane getAufgabenPanel(int anzahl) {
-            // Das eigentliche Panel, das die Aufgaben enthält
-            JPanel contentPanel = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.insets = new Insets(5, 10, 5, 10);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            int offset = 0;
-            panelListe = new ArrayList<>();
-            for (int i = 1; i <= anzahl; i++) {
-                JPanel aufgabeI = new JPanel(new BorderLayout(10, 0));
-                // Titelfeld
-                JTextField titelI = new JTextField(I18n.t("model.Aufgabentyp.EA_abr") + " " + i);
-                titelI.setPreferredSize(new Dimension(150, 25));
-                aufgabeI.add(titelI, BorderLayout.WEST);
-                JDatePickerImpl startFeld;
-                JDatePickerImpl endeFeld;
-                if (anzahl == 7) {
-                    // Startdatum
-                    UtilDateModel startModel = Kalender.getModellMitSemesterdatum(offset);
-                    JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
-                    startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
-                    aufgabeI.add(startFeld, BorderLayout.CENTER);
-                    offset += 14;
-                    // Enddatum
-                    UtilDateModel endeModel = Kalender.getModellMitSemesterdatum(offset);
-                    JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
-                    endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
-                    aufgabeI.add(endeFeld, BorderLayout.EAST);
-                } else {
-                    int zeitProEinheit = Kalender.getTageDurcharbeiten(anzahl);
-                    // Startdatum
-                    UtilDateModel startModel = Kalender.getModellMitSemesterdatum(offset);
-                    JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
-                    startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
-                    offset += zeitProEinheit;
-                    // Enddatum
-                    UtilDateModel endeModel = Kalender.getModellMitSemesterdatum(offset);
-                    JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
-                    endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
-                }
-                aufgabeI.add(startFeld, BorderLayout.CENTER);
-                aufgabeI.add(endeFeld, BorderLayout.EAST);
-                contentPanel.add(aufgabeI, gbc);
-                gbc.gridy++;
-                panelListe.add(aufgabeI);
-            }
-            // Jetzt das contentPanel in ein ScrollPane einbetten
-            JScrollPane scrollPane = new JScrollPane(contentPanel);
-            scrollPane.setPreferredSize(new Dimension(500, 350));
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            return scrollPane;
-        }
     }
 
     private class SchrittWiederholen extends AufgabenSchritte {
@@ -469,8 +513,56 @@ public class ModulEinplanen extends JFrame {
 
     private class SchrittAltklausur extends AufgabenSchritte {
         SchrittAltklausur() {
-            setLayout(new BorderLayout());
-            add(new JLabel("Altklausur Schritt", SwingConstants.CENTER), BorderLayout.CENTER);
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 20, 10, 20);
+            gbc.anchor = GridBagConstraints.WEST;
+            // Zeile 1: Label
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            add(new JLabel(I18n.t("ui.ModulEinplanen.AnzAltklausuren") + ":"), gbc);
+            // Zeile 1: Textfeld
+            gbc.gridx = 1;
+            JTextField anzEinheiten = new JTextField(5);
+            add(anzEinheiten, gbc);
+            // Zeile 2: Start Altklausuren
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            add(new JLabel(I18n.t("ui.ModulEinplanen.StartAltklausuren") + ":"), gbc);
+            gbc.gridx = 1;
+            UtilDateModel startModel = Kalender.getModellMitSemesterdatum(101);
+            JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
+            JDatePickerImpl startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
+            add(startFeld, gbc);
+            // Zeile 2: Button
+            gbc.gridx = 3;
+            JButton erzeuge = new JButton(I18n.t("ui.ModulEinplanen.ErzeugeAufgaben"));
+            add(erzeuge, gbc);
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            gbc.gridwidth = 4; // über volle Breite
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1.0;
+            // Zeile 3: Aufgabenpanel
+            erzeuge.addActionListener(e -> {
+                try {
+                    LocalDate start = ((Date) startFeld.getModel().getValue()).toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate ende = modul.getKlausurTermin().minusDays(7);
+                    int anzahl = Integer.parseInt(anzEinheiten.getText().trim());
+                    if (aufgabenPanel != null) {
+                        remove(aufgabenPanel); // nur entfernen, wenn schon vorhanden
+                    }
+                    aufgabenPanel = getAufgabenPanel(start, ende, anzahl);
+                    add(aufgabenPanel, gbc);
+                    aufgabenPanel.setBorder(null);
+                    revalidate();
+                    repaint();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Bitte gib eine ganze Zahl ein!", "Ungültige Eingabe",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            });
         }
 
         @Override

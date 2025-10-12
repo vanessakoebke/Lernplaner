@@ -256,6 +256,9 @@ public class DatenbankService {
                 case 2: 
                     status =  Status.ERLEDIGT;
                     break;
+                case 3:
+                    status = Status.WARTEND;
+                    break;
                 default: 
                     status =  Status.NEU;
                     break;
