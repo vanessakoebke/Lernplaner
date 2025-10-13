@@ -5,7 +5,6 @@ import java.awt.GridBagLayout;
 
 import javax.swing.*;
 
-import service.Control;
 import util.FALoader;
 
 public class NavigationsPanel extends JPanel {

@@ -54,7 +54,7 @@ public class AufgabenManager {
     public List<Aufgabe> getAufgabenListe(Modul modul) {
         List<Aufgabe> result = new ArrayList<>();
         for (Aufgabe a : aufgabenListe) {
-            if (a.getModul().equals(modul)) {
+            if (a.getModul().getId().equals(modul.getId())) {
                 result.add(a);
             }
         }

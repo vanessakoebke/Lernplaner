@@ -35,7 +35,9 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
         case 1:
             return control.getAm().getAktuelle();
         case 2:
-            return control.getAm().filter(e -> (e.getStart().isBefore(LocalDate.now()) && !e.isErledigt()));
+            return control.getAm().filter(e -> 
+                e.getStart() != null && e.getStart().isBefore(LocalDate.now().minusDays(1)) && !e.isErledigt()
+            );
         default:
             return control.getAm().getAktuelle();
         }

@@ -18,6 +18,7 @@ public class CenterPanel extends JPanel implements IAnsicht {
     private AufgabenAnsicht aktuell;
     private AufgabenAnsicht alt;
     private AufgabenAnsicht inArbeit;
+    private Fortschritt fortschrittPanel;
     private final List<JPanel> panelListe = new ArrayList<>();
     private JPanel aktuellesPanel;
 
@@ -26,6 +27,7 @@ public class CenterPanel extends JPanel implements IAnsicht {
         initAufgabenAnsichtAktuell(control);
         initAufgabenAnsichtAlt(control);
         initAufgabenAnsichtInArbeit(control);
+        initFortschrittAnsicht(control);
         showPanel(0); // per Default das erste Panel anzeigen
     }
 
@@ -35,11 +37,9 @@ public class CenterPanel extends JPanel implements IAnsicht {
         JTable tabelle = new JTable(aktuell);
         TableRowSorter<AufgabenAnsicht> sorter = new TableRowSorter<>(aktuell);
         tabelle.setRowSorter(sorter);
-
         tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        
-        //Spalten Datum
+        // Spalten Datum
         tabelle.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             protected void setValue(Object value) {
@@ -50,7 +50,6 @@ public class CenterPanel extends JPanel implements IAnsicht {
                 }
             }
         });
-
         tabelle.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             protected void setValue(Object value) {
@@ -61,11 +60,9 @@ public class CenterPanel extends JPanel implements IAnsicht {
                 }
             }
         });
-
         // Status-Dropdown
         JComboBox<Status> statusCombo = new JComboBox<>(Status.values());
         tabelle.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(statusCombo));
-
         // Spalte Bearbeiten
         EditButton editButton = new EditButton();
         tabelle.getColumnModel().getColumn(6).setCellRenderer(editButton.getRenderer());
@@ -74,7 +71,6 @@ public class CenterPanel extends JPanel implements IAnsicht {
             new AufgabeBearbeiten(aktuell, modelRow, control);
         }));
         fixButtonColumnWidth(tabelle, 6, editButton.getButton());
-
         // Spalte Löschen
         DeleteButton deleteButton = new DeleteButton();
         tabelle.getColumnModel().getColumn(7).setCellRenderer(deleteButton.getRenderer());
@@ -87,29 +83,24 @@ public class CenterPanel extends JPanel implements IAnsicht {
             }
         }));
         fixButtonColumnWidth(tabelle, 7, deleteButton.getButton());
-
         // JScrollPane
         JScrollPane scrollPane = new JScrollPane(tabelle);
-
         // Panel für Aufgabenansicht
         JPanel aufgabenPanel = new JPanel(new BorderLayout());
         aufgabenPanel.add(scrollPane, BorderLayout.CENTER);
-
         // Panel in die Liste aufnehmen
         panelListe.add(0, aufgabenPanel);
     }
-    
+
     // --- Initialisierung der Aufgaben-Ansicht aktuell---
     private void initAufgabenAnsichtInArbeit(Control control) {
         inArbeit = new AufgabenAnsicht(control, 2);
         JTable tabelle = new JTable(inArbeit);
         TableRowSorter<AufgabenAnsicht> sorter = new TableRowSorter<>(inArbeit);
         tabelle.setRowSorter(sorter);
-
         tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        
-        //Spalten Datum
+        // Spalten Datum
         tabelle.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             protected void setValue(Object value) {
@@ -120,7 +111,6 @@ public class CenterPanel extends JPanel implements IAnsicht {
                 }
             }
         });
-
         tabelle.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             protected void setValue(Object value) {
@@ -131,11 +121,9 @@ public class CenterPanel extends JPanel implements IAnsicht {
                 }
             }
         });
-
         // Status-Dropdown
         JComboBox<Status> statusCombo = new JComboBox<>(Status.values());
         tabelle.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(statusCombo));
-
         // Spalte Bearbeiten
         EditButton editButton = new EditButton();
         tabelle.getColumnModel().getColumn(6).setCellRenderer(editButton.getRenderer());
@@ -144,7 +132,6 @@ public class CenterPanel extends JPanel implements IAnsicht {
             new AufgabeBearbeiten(inArbeit, modelRow, control);
         }));
         fixButtonColumnWidth(tabelle, 6, editButton.getButton());
-
         // Spalte Löschen
         DeleteButton deleteButton = new DeleteButton();
         tabelle.getColumnModel().getColumn(7).setCellRenderer(deleteButton.getRenderer());
@@ -157,29 +144,24 @@ public class CenterPanel extends JPanel implements IAnsicht {
             }
         }));
         fixButtonColumnWidth(tabelle, 7, deleteButton.getButton());
-
         // JScrollPane
         JScrollPane scrollPane = new JScrollPane(tabelle);
-
         // Panel für Aufgabenansicht
         JPanel aufgabenPanel = new JPanel(new BorderLayout());
         aufgabenPanel.add(scrollPane, BorderLayout.CENTER);
-
         // Panel in die Liste aufnehmen
         panelListe.add(2, aufgabenPanel);
     }
-    
-    //--- Initialisierung der Aufgaben-Ansicht alt---
+
+    // --- Initialisierung der Aufgaben-Ansicht alt---
     private void initAufgabenAnsichtAlt(Control control) {
         alt = new AufgabenAnsicht(control, 0);
         JTable tabelle = new JTable(alt);
         TableRowSorter<AufgabenAnsicht> sorter = new TableRowSorter<>(alt);
         tabelle.setRowSorter(sorter);
-
         tabelle.getTableHeader().setFont(tabelle.getTableHeader().getFont().deriveFont(Font.BOLD, 14f));
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
-        
-        //Spalten Datum
+        // Spalten Datum
         tabelle.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             protected void setValue(Object value) {
@@ -190,7 +172,6 @@ public class CenterPanel extends JPanel implements IAnsicht {
                 }
             }
         });
-
         tabelle.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             protected void setValue(Object value) {
@@ -201,12 +182,9 @@ public class CenterPanel extends JPanel implements IAnsicht {
                 }
             }
         });
-
-
         // Status-Dropdown
         JComboBox<Status> statusCombo = new JComboBox<>(Status.values());
         tabelle.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(statusCombo));
-
         // Spalte Bearbeiten
         EditButton editButton = new EditButton();
         tabelle.getColumnModel().getColumn(6).setCellRenderer(editButton.getRenderer());
@@ -215,7 +193,6 @@ public class CenterPanel extends JPanel implements IAnsicht {
             new AufgabeBearbeiten(alt, modelRow, control);
         }));
         fixButtonColumnWidth(tabelle, 6, editButton.getButton());
-
         // Spalte Löschen
         DeleteButton deleteButton = new DeleteButton();
         tabelle.getColumnModel().getColumn(7).setCellRenderer(deleteButton.getRenderer());
@@ -228,18 +205,28 @@ public class CenterPanel extends JPanel implements IAnsicht {
             }
         }));
         fixButtonColumnWidth(tabelle, 7, deleteButton.getButton());
-
         // JScrollPane
         JScrollPane scrollPane = new JScrollPane(tabelle);
-
         // Panel für Aufgabenansicht
         JPanel aufgabenPanel = new JPanel(new BorderLayout());
         aufgabenPanel.add(scrollPane, BorderLayout.CENTER);
-
         // Panel in die Liste aufnehmen
         panelListe.add(1, aufgabenPanel);
     }
 
+    // --- Initialisierung der Fortschritts-Ansicht---
+    private void initFortschrittAnsicht(Control control) {
+        fortschrittPanel = new Fortschritt(control);
+        // Test: Erzwingen der PreferredSize des Fortschritt-Panels selbst
+        // Optional: Wenn Sie z.B. 4 Module haben, braucht das Panel mind. 4 * (30px Bar
+        // + 14px Titel + 5px Insets) = ca. 200px.
+        // fortschrittPanel.setPreferredSize(new Dimension(0, 250)); // Fügen Sie dies
+        // testweise hinzu!
+        JScrollPane scrollPane = new JScrollPane(fortschrittPanel);
+        JPanel fortPanelContainer = new JPanel(new BorderLayout());
+        fortPanelContainer.add(scrollPane, BorderLayout.CENTER);
+        panelListe.add(3, fortPanelContainer);
+    }
 
     // --- Hilfsmethode für feste Button-Spaltenbreite ---
     private void fixButtonColumnWidth(JTable table, int colIndex, JButton button) {
@@ -256,6 +243,9 @@ public class CenterPanel extends JPanel implements IAnsicht {
         if (aktuellesPanel != null) remove(aktuellesPanel);
         aktuellesPanel = panelListe.get(index);
         add(aktuellesPanel, BorderLayout.CENTER);
+        if (index == 3 && fortschrittPanel != null) {
+            fortschrittPanel.refresh();
+        }
         revalidate();
         repaint();
     }
@@ -263,10 +253,10 @@ public class CenterPanel extends JPanel implements IAnsicht {
     @Override
     public void refresh() {
         if (aktuell != null) {
-            aktuell.refresh();  // ruft fireTableDataChanged()
+            aktuell.refresh(); // ruft fireTableDataChanged()
         }
         if (alt != null) {
-            alt.refresh();  // ruft fireTableDataChanged()
+            alt.refresh(); // ruft fireTableDataChanged()
         }
         if (aktuellesPanel != null) {
             aktuellesPanel.revalidate();
@@ -277,11 +267,10 @@ public class CenterPanel extends JPanel implements IAnsicht {
     AufgabenAnsicht getAktuell() {
         return aktuell;
     }
-    
+
     AufgabenAnsicht getAlt() {
         return alt;
     }
-
 
     // Zugriff auf Panels, falls du weitere verwalten willst
     public JPanel getPanel(int index) {
