@@ -352,7 +352,7 @@ public class ModulEinplanen extends JFrame {
             JPanel aufgabenWahl = new JPanel(new GridLayout(0, 1, 5, 5));
             aufgabenWahl.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
             aufgabenWahl.add(labelWelcheAufgaben);
-            JCheckBox[] checkboxes = { cbAllgemein, cbDurcharbeiten, cbEA, cbWiederholen, cbAltklausur };
+            JCheckBox[] checkboxes = { cbDurcharbeiten, cbEA, cbAltklausur };
             for (JCheckBox cb : checkboxes) {
                 cb.setFocusPainted(false);
                 aufgabenWahl.add(cb);
