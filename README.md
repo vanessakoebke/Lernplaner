@@ -9,8 +9,7 @@
 
 ## Anforderungen
 
-- **Java 8 oder neuer**
-- Optional: Gson-Library (für JSON-Verarbeitung, falls nicht im Build eingebunden)
+- **Java 21 oder neuer**
 
 ## Installation
 
@@ -35,7 +34,7 @@
 ## Hinweise
 
 - Alle Daten werden lokal gespeichert, es gibt keine Cloud-Synchronisation.  
-- Bitte Java 8+ verwenden, da ältere Versionen Probleme verursachen können.
+- Bitte Java 21+ verwenden, da ältere Versionen Probleme verursachen können.
 
 ## Coming soon
 
