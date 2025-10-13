@@ -21,22 +21,25 @@
   - [x] Altklausuren [#14]
      
 ## Version 1.2
-- [ ] Modul einplanen [#15]
+- [x] Modul einplanen [#15]
   - [x] Klausurtermin anlegen [#17]
-  - [ ] zugehörige Aufgaben planen anhand von Seitenzahl und verfügbarer Zeit [#18]
-- [ ] Speichern- und Laden-Buttons [#25]
-- [ ] Fortschrittsansicht [#35]
+  - [x] zugehörige Aufgaben planen anhand von Einheiten und verfügbarer Zeit [#18]
+- [x] Speichern- und Laden-Buttons [#25]
+- [x] Fortschrittsansicht [#35]
+- [x] Aufgabenliste sortieren [#27]
+- [x] Aufgabenarchiv für erledigte Aufgaben [#19]
+- [x] Ansicht für nicht-erledigte und aktuelle Aufgaben
 
-
-
-## Anforderungen mittelfristig
-- [ ] Aufgabenarchiv für erledigte Aufgaben [#19]
-- [ ] verbesserte GUI (noch zu definieren)
-- [ ] Aufgabenliste filtern [#26]
-- [ ] Aufgabenliste sortieren [#27]
-- [ ] Aufgaben priorisieren [#28]
+## Version 1.3
 - [ ] Ansicht tägliche Aufgaben [#30]
 - [ ] Ansicht wöchentliche Aufgaben [#31]
+- [ ] Lerngruppen
+- [ ] Pokalansicht für geschriebene Klausuren
+- [ ] Aufgabenliste filtern [#26]
+
+## Anforderungen mittelfristig
+- [ ] verbesserte GUI (noch zu definieren)
+- [ ] Aufgaben priorisieren [#28]
 - [ ] Übersetzung [#32]
 
 ## Anforderungen langfristig
