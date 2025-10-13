@@ -100,7 +100,7 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
         if (columnIndex == 5 && aValue instanceof Status) {
             Aufgabe aufgabe = getBackingList().get(rowIndex);
             aufgabe.setStatus((Status) aValue);
-            fireTableCellUpdated(rowIndex, columnIndex);
+            fireTableDataChanged();
         }
     }
 
@@ -111,7 +111,7 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
 
     public void updateAufgabe(Aufgabe aufgabe, int id, int row) {
         control.getAm().updateAufgabe(aufgabe, id);
-        fireTableRowsUpdated(row, row);
+        fireTableDataChanged();
     }
 
     public Aufgabe getAufgabe(int row) {

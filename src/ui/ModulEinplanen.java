@@ -1,8 +1,8 @@
 package ui;
 
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.awt.event.ActionListener;
+import java.time.*;
 import java.util.*;
 import java.util.List;
 
@@ -73,6 +73,12 @@ public class ModulEinplanen extends JFrame {
     }
 
     private void vorbereiteSchritte() {
+        // 1️⃣ Modul-Auswahl prüfen
+        if (modul == null) {
+            JOptionPane.showMessageDialog(this, "Bitte wähle zuerst ein Modul aus, bevor du fortfährst.",
+                    "Kein Modul ausgewählt", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         sichtbareSchritte.clear();
         sichtbareSchritte.addAll(schritt1.gewählteTypen());
         if (sichtbareSchritte.isEmpty()) {
@@ -103,14 +109,18 @@ public class ModulEinplanen extends JFrame {
     }
 
     private void updateButtons() {
+        for (ActionListener al : buttonWeiter.getActionListeners()) {
+            buttonWeiter.removeActionListener(al);
+        }
         buttonZurueck.setEnabled(aktuellerSchritt > 0);
         // Schritt1 immer "Weiter →"
         if (aktuellerSchritt == 0) {
             buttonWeiter.setText("Weiter →");
             buttonWeiter.setEnabled(true);
+            buttonWeiter.addActionListener(e -> vorbereiteSchritte());
         }
         // letzte sichtbare Schritte = "Fertig"
-        else if (aktuellerSchritt == sichtbareSchritte.size()) {
+        else if (aktuellerSchritt >= sichtbareSchritte.size()) {
             buttonWeiter.setText("Fertig");
             buttonWeiter.setEnabled(true);
             buttonWeiter.addActionListener(x -> {
@@ -129,6 +139,7 @@ public class ModulEinplanen extends JFrame {
                     control.getDb().upsertAufgabe(a);
                 }
                 hf.refresh();
+                dispose();
             });
         }
         // normale Zwischen-Schritte
@@ -146,6 +157,8 @@ public class ModulEinplanen extends JFrame {
                 if (aktuellesPanel instanceof AufgabenSchritte) {
                     ((AufgabenSchritte) aktuellesPanel).addAufgaben();
                 }
+                // 4. Gehe zu nächstem Schritt
+                geheZuSchritt(aktuellerSchritt + 1);
             });
         }
     }
@@ -281,30 +294,26 @@ public class ModulEinplanen extends JFrame {
             panelListe = new ArrayList<>();
             for (int i = 1; i <= anzahl; i++) {
                 JPanel aufgabeI = new JPanel(new BorderLayout(10, 0));
-             // Titelfeld
+                // Titelfeld
                 JTextField titelI = new JTextField();
                 titelI.setPreferredSize(new Dimension(150, 25));
                 aufgabeI.add(titelI, BorderLayout.WEST);
-
                 // Startdatum
                 UtilDateModel startModel = new UtilDateModel();
                 startModel.setValue(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 startModel.setSelected(true);
                 JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
                 JDatePickerImpl startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
-
                 // Enddatum
                 UtilDateModel endeModel = new UtilDateModel();
                 endeModel.setValue(Date.from(ende.atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 endeModel.setSelected(true);
                 JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
                 JDatePickerImpl endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
-
                 // Komponenten hinzufügen
                 aufgabeI.add(startFeld, BorderLayout.CENTER);
                 aufgabeI.add(endeFeld, BorderLayout.EAST);
                 contentPanel.add(aufgabeI, gbc);
-
                 gbc.gridy++;
                 panelListe.add(aufgabeI);
             }
@@ -548,7 +557,19 @@ public class ModulEinplanen extends JFrame {
                 try {
                     LocalDate start = ((Date) startFeld.getModel().getValue()).toInstant()
                             .atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalDate ende = modul.getKlausurTermin().minusDays(7);
+                    LocalDate klausur;
+                    if (modul.getKlausurTermin() != null) {
+                        klausur = modul.getKlausurTermin();
+                    } else {
+                        if (Kalender.isSommersemester()) {
+                            klausur = LocalDate.of(LocalDate.now().getYear(), Month.AUGUST, 20);
+                        } else if (LocalDate.now().getMonth().getValue() <= 12) {
+                            klausur = LocalDate.of(LocalDate.now().getYear() + 1, 2, 20);
+                        } else {
+                            klausur = LocalDate.of(LocalDate.now().getYear(), 2, 20);
+                        }
+                    }
+                    LocalDate ende = klausur.minusDays(10);
                     int anzahl = Integer.parseInt(anzEinheiten.getText().trim());
                     if (aufgabenPanel != null) {
                         remove(aufgabenPanel); // nur entfernen, wenn schon vorhanden
@@ -567,7 +588,17 @@ public class ModulEinplanen extends JFrame {
 
         @Override
         protected void addAufgaben() {
-            // TODO Auto-generated method stub
+            for (JPanel p : panelListe) {
+                String titel = ((JTextField) p.getComponent(0)).getText();
+                Date startDate = (Date) ((JDatePickerImpl) p.getComponent(1)).getModel().getValue();
+                LocalDate start = startDate != null ? startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        : null;
+                Date endDate = (Date) ((JDatePickerImpl) p.getComponent(2)).getModel().getValue();
+                LocalDate ende = endDate != null ? endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        : null;
+                AufgabeAltklausur ak = new AufgabeAltklausur(titel, "", ende, start, Status.NEU, modul, "");
+                aufgabenListe.add(ak);
+            }
         }
     }
 }
