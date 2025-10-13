@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.swing.*;
 
@@ -14,6 +13,7 @@ import org.jdatepicker.impl.*;
 import lang.I18n;
 import model.*;
 import service.Control;
+import service.Kalender;
 import util.CalendarFormatter;
 
 public class EingabePanel extends JPanel implements IAnsicht {
@@ -109,7 +109,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
         // Startdatum
         JLabel startLabel = new JLabel(I18n.t("ui.Common.Start"));
         UtilDateModel startModel = new UtilDateModel();
-        JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, getCalendarProperties());
+        JDatePanelImpl startDatePanel = new JDatePanelImpl(startModel, Kalender.getCalendarProperties());
         startFeld = new JDatePickerImpl(startDatePanel, new CalendarFormatter());
         gbc.gridx = 0;
         gbc.gridy = 12;
@@ -120,7 +120,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
         // Enddatum
         JLabel endeLabel = new JLabel(I18n.t("ui.Common.Faelligkeit"));
         UtilDateModel endeModel = new UtilDateModel();
-        JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, getCalendarProperties());
+        JDatePanelImpl endeDatePanel = new JDatePanelImpl(endeModel, Kalender.getCalendarProperties());
         endeFeld = new JDatePickerImpl(endeDatePanel, new CalendarFormatter());
         gbc.gridx = 0;
         gbc.gridy = 15;
@@ -246,13 +246,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
     
     }
 
-    private Properties getCalendarProperties() {
-        Properties p = new Properties();
-        p.put("text.today", I18n.t("ui.Kalender.Heute"));
-        p.put("text.month", I18n.t("ui.Kalender.Monat"));
-        p.put("text.year", I18n.t("ui.Kalender.Jahr"));
-        return p;
-    }
 
     public Aufgabe getAufgabe() {
         Date startDate = (Date) startFeld.getModel().getValue();
@@ -277,6 +270,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
                     return new AufgabeDurcharbeiten(titelFeld.getText(), beschreibungFeld.getText(),
                             ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), seiten);
                 case EA:
+                    System.out.println(titelFeld.getText());
                     return new AufgabeEA(titelFeld.getText(), beschreibungFeld.getText(),
                             ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), ergebnisFeld.getText());
                 case ALTKLAUSUR:
@@ -342,7 +336,16 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.aufgabe = aufgabe;
         this.neueingabe = false;
 
-        modulFeld.setSelectedItem(aufgabe.getModul());
+     // Modul nach ID suchen und auswählen
+        Modul aufgabenModul = aufgabe.getModul();
+        for (int i = 0; i < modulFeld.getItemCount(); i++) {
+            Modul m = modulFeld.getItemAt(i);
+            if (m.getId() == aufgabenModul.getId()) { // falls du IDs hast
+                modulFeld.setSelectedIndex(i);
+                break;
+            }
+        }
+
         aufgabentypFeld.setSelectedItem(aufgabe.getTyp());
         titelFeld.setText(aufgabe.getTitel());
         beschreibungFeld.setText(aufgabe.getBeschreibung());

@@ -60,6 +60,24 @@ public class Control {
     }
     
     
-    
+    public void reloadData() {
+        System.out.println("🔄 Daten werden neu geladen...");
+
+        // Verbindung neu initialisieren
+        db.init();
+
+        // Aufgaben und Module neu laden
+        this.am = new AufgabenManager(persistenz.aufgabenLaden());
+        this.mm = persistenz.moduleLaden();
+
+        // Einstellungen neu laden
+        this.einstellungen = persistenz.einstellungenLaden();
+
+        // Sprache aktualisieren
+        I18n.load(einstellungen.getSprachcode());
+
+        System.out.println("✅ Daten wurden erfolgreich neu geladen.");
+    }
+
     
 }

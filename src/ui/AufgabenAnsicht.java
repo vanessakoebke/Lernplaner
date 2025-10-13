@@ -1,35 +1,51 @@
 package ui;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import lang.I18n;
 import model.*;
-import service.AufgabenManager;
 import service.Control;
 
 public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
-
-    private final String[] spaltenTitel = {
-            I18n.t("model.Aufgabentyp.Modul"),
-            I18n.t("ui.Common.Aufgabenname"),
-            I18n.t("ui.Common.Beschreibung"),
-            I18n.t("ui.Common.Start"),
-            I18n.t("ui.Common.Faelligkeit"),
-            I18n.t("ui.Common.Status"),
-            "", // Bearbeiten
-            ""  // Löschen
+    private final String[] spaltenTitel = { I18n.t("model.Aufgabentyp.Modul"), I18n.t("ui.Common.Aufgabenname"),
+            I18n.t("ui.Common.Beschreibung"), I18n.t("ui.Common.Start"), I18n.t("ui.Common.Faelligkeit"),
+            I18n.t("ui.Common.Status"), "", // Bearbeiten
+            "" // Löschen
     };
+    private final Control control;
+    private final int aktuellView; // 0 = erledigt Aufgaben, 1= aktuelle Aufgaben, 2 = Aufgaben in Arbeit
 
-    private Control control;
-    
-
-    public AufgabenAnsicht(Control control) {
+    public AufgabenAnsicht(Control control, int aktuell) {
         this.control = control;
+        this.aktuellView = aktuell;
+
+
+    }
+
+    /**
+     * Liefert immer die aktuelle Liste (kein Snapshot!)
+     */
+    private List<Aufgabe> getBackingList() {
+        switch (aktuellView) {
+        case 0:
+            return control.getAm().getAlte();
+        case 1:
+            return control.getAm().getAktuelle();
+        case 2:
+            return control.getAm().filter(e -> 
+                e.getStart() != null && e.getStart().isBefore(LocalDate.now().minusDays(1)) && !e.isErledigt()
+            );
+        default:
+            return control.getAm().getAktuelle();
+        }
     }
 
     @Override
     public int getRowCount() {
-        return control.getAm().getAufgabenListe().size();
+        return getBackingList().size();
     }
 
     @Override
@@ -44,75 +60,80 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 5) return Status.class; // Status-Enum
-        if (columnIndex >= 6) return Object.class;  // Buttons
-        return String.class;
+        switch (columnIndex) {
+            case 0: return Modul.class;      // Modul
+            case 3:                         // Start
+            case 4:                         // Ende
+                return LocalDate.class;
+            case 5: return Status.class;
+            default: return String.class;
+        }
     }
+
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 5 || columnIndex >= 6; // Status + Buttons editierbar
+        return columnIndex == 5 || columnIndex >= 6;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Aufgabe a = control.getAm().getAufgabenListe().get(rowIndex);
+        Aufgabe a = getBackingList().get(rowIndex);
         switch (columnIndex) {
-            case 0: return a.getModul();
-            case 1: return a.getTitel();
-            case 2: return a.getBeschreibung() != null ? a.getBeschreibung() : "";
-            case 3: return a.getStart() != null ? a.getStart().format(control.getEinstellungen().getDatumsformat()) : "";
-            case 4: return a.getEnde() != null ? a.getEnde().format(control.getEinstellungen().getDatumsformat()) : "";
-            case 5: return a.getStatus();
-            default: return ""; // Platzhalter für Button-Spalten
+        case 0:
+            return a.getModul();
+        case 1:
+            return a.getTitel();
+        case 2:
+            return a.getBeschreibung() != null ? a.getBeschreibung() : "";
+        case 3: 
+            return a.getStart();  // LocalDate direkt zurückgeben
+        case 4: 
+            return a.getEnde();   // LocalDate direkt zurückgeben
+        case 5:
+            return a.getStatus();
+        default:
+            return "";
         }
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == 5 && aValue instanceof Status) {
-            Aufgabe aufgabe = control.getAm().getAufgabenListe().get(rowIndex);
+            Aufgabe aufgabe = getBackingList().get(rowIndex);
             aufgabe.setStatus((Status) aValue);
-            fireTableCellUpdated(rowIndex, columnIndex);
+            fireTableDataChanged();
         }
     }
 
     public void addAufgabe(Aufgabe aufgabe) {
         control.getAm().addAufgabe(aufgabe);
-        int row = getRowCount() - 1;
-        fireTableRowsInserted(row, row);
+        fireTableDataChanged();
     }
-    
+
     public void updateAufgabe(Aufgabe aufgabe, int id, int row) {
         control.getAm().updateAufgabe(aufgabe, id);
-        fireTableRowsUpdated(row, row);
+        fireTableDataChanged();
     }
 
     public Aufgabe getAufgabe(int row) {
-        return control.getAm().getAufgabenListe().get(row);
+        return getBackingList().get(row);
     }
 
     public void removeAufgabe(int row, int id) {
-        // Zuerst die Aufgabe aus der Liste holen
-        Aufgabe zuLoeschen = control.getAm().getAufgabenListe()
-                                   .stream()
-                                   .filter(a -> a.getId() != null && a.getId() == id)
-                                   .findFirst()
-                                   .orElse(null);
-
+        Aufgabe zuLoeschen = control.getAm().getAufgabenListe().stream()
+                .filter(a -> a.getId() != null && a.getId() == id).findFirst().orElse(null);
         if (zuLoeschen != null) {
-            // Aus der Liste entfernen
             control.getAm().getAufgabenListe().remove(zuLoeschen);
-            // Aus der DB löschen
             control.getDb().deleteAufgabe(zuLoeschen);
-            // TableModel informieren
-            fireTableRowsDeleted(row, row);
+            fireTableDataChanged();
         }
     }
 
     @Override
     public void refresh() {
+        // ruft einfach die Tabelle neu ab – Daten kommen dynamisch über
+        // getBackingList()
         fireTableDataChanged();
-        
     }
 }

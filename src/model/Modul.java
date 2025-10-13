@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
-public class Modul {
+public class Modul implements Comparable<Modul>{
     private Integer id; 
     private String name;
     private LocalDate klausurTermin;
@@ -75,5 +75,8 @@ public class Modul {
         this.note= note;
     }
     
-    
+    public int compareTo(Modul other) {
+        return this.name.compareToIgnoreCase(other.name);
+    }
+
 }

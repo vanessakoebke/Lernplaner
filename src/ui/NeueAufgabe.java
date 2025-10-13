@@ -9,12 +9,12 @@ import service.*;
 import ui.buttons.*;
 
 public class NeueAufgabe extends JFrame {
-    private AufgabenAnsicht aufgabenAnsicht;
+    private CenterPanel center;
     private EingabePanel eingabePanel;
 
-    public NeueAufgabe(AufgabenAnsicht aufgabenAnsicht, Control control) {
+    public NeueAufgabe(CenterPanel center, Control control) {
         super(I18n.t("ui.NeueAufgabe.FensterTitel"));
-        this.aufgabenAnsicht = aufgabenAnsicht;
+        this.center = center;
         this.eingabePanel = new EingabePanel(control);
 
         // Buttons
@@ -23,12 +23,17 @@ public class NeueAufgabe extends JFrame {
         JButton buttonHinzu = new JButton(I18n.t("Common.ButtonHinzufuegen"));
         buttonHinzu.addActionListener(e -> {
             Aufgabe aufgabe = eingabePanel.getAufgabe();
-            aufgabenAnsicht.addAufgabe(aufgabe); // Callback an Main
+            
+            // 1. In den globalen AufgabenManager speichern
+            control.getAm().addAufgabe(aufgabe);
+
+            // 2. In die Datenbank speichern
             if (aufgabe.getId() == null) {
-                DatenbankService db = new DatenbankService();
-                db.init();
-                db.upsertAufgabe(aufgabe);
+                control.getDb().upsertAufgabe(aufgabe);
             }
+
+            // 3. TableModel refreshen
+            center.refresh(); // fireTableDataChanged() wird intern aufgerufen  
 
             this.dispose();
         });

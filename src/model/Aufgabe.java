@@ -18,7 +18,7 @@ public abstract class Aufgabe {
     
     public Aufgabe(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul) {
         this.id = null;
-        this.titel = titel;
+        this.titel = titel.toString();
         this.beschreibung = beschreibung;
         this.ende = ende;
         this.start = start;
@@ -71,7 +71,7 @@ public abstract class Aufgabe {
     }
     
     public String getTitel() {
-        return titel;
+        return titel.toString();
     }
 
     public String getBeschreibung() {

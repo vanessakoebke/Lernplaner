@@ -24,14 +24,15 @@
   "ui": {
     "Common": {
       "Aufgabenname": "Aufgabenname",
-      "Beschreibung": "Beschreibung",
+      "Beschreibung": "Notizen",
 	  "Start": "Start am",
       "Faelligkeit": "Fällig am",
       "Status": "Status"
     },
     "Main": {
       "FensterTitel": "Lernplaner",
-      "ButtonNeueAufgabe": "Aufgabe hinzufügen"
+      "ButtonNeueAufgabe": "Aufgabe hinzufügen",
+	  "ButtonModulEinplanen": "Modul einplanen"
     },
     "NeueAufgabe": {
       "FensterTitel": "Neue Aufgabe"
@@ -55,6 +56,14 @@
 		"FortschrittAnzeigen": "Fortschritt anzeigen",
 		"Fortschritt": "Fortschritt"
 	},
+	"ModulEinplanen": {
+		"WelcheAufgaben": "Welche Aufgaben möchtest du einplanen?",
+		"ModulWaehlen": "Welches Modul möchtest du einplanen?",
+		"ErzeugeAufgaben": "Erzeuge Aufgaben",
+		"AnzEAs": "Anzahl Einsendeaufgaben",
+		"AnzAltklausuren": "Anzahl Altklausuren",
+		"StartAltklausuren": "Start Altklausuren"
+	},
 	"Kalender": {
 		"Heute": "Heute",
 		"Monat": "Monat",
@@ -64,6 +73,7 @@
   "model": {
 	"StatusNeu": "noch nicht begonnen",
 	"StatusAngefangen": "begonnen",
+	"StatusWartend": "wartend";
 	"StatusErledigt": "erledigt",
 	"Module": "Module",
 	"ModuleVerwalten": "Module verwalten",
