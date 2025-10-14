@@ -6,8 +6,8 @@ public class AufgabeAltklausur extends Aufgabe {
 
     private String ergebnis;
     
-    public AufgabeAltklausur(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul, String ergebnis){
-        super(titel, beschreibung, ende, start, status, modul);
+    public AufgabeAltklausur(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul, String ergebnis, Aufgabe folgeAufgabe){
+        super(titel, beschreibung, ende, start, status, modul, folgeAufgabe);
         this.ergebnis = ergebnis;
     }
 

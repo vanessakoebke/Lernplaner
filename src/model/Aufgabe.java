@@ -15,8 +15,9 @@ public abstract class Aufgabe {
     private long tageBisFaellig;
     private Modul modul;
     private List<Aufgabe> teilaufgaben = new ArrayList<Aufgabe>();
+    private Aufgabe folgeAufgabe;
     
-    public Aufgabe(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul) {
+    public Aufgabe(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul, Aufgabe folgeAufgabe) {
         this.id = null;
         this.titel = titel.toString();
         this.beschreibung = beschreibung;
@@ -25,6 +26,7 @@ public abstract class Aufgabe {
         this.status = status;
         this.tageBisFaellig =  ende == null ? 200 : ChronoUnit.DAYS.between(LocalDate.now(), ende);
         this.modul = modul;
+        this.folgeAufgabe = folgeAufgabe;
     }
     
     public void update(Aufgabe neu) {
@@ -35,6 +37,7 @@ public abstract class Aufgabe {
         this.ende = neu.ende;
         this.status = neu.status;
         this.teilaufgaben = neu.teilaufgaben;
+        this.folgeAufgabe = folgeAufgabe;
     }
     
     public LocalDate getStart() {
@@ -120,6 +123,14 @@ public abstract class Aufgabe {
     
     public void setId(Integer id) {
         this.id = id;
+    }
+    
+    public Aufgabe getFolgeAufgabe() {
+        return folgeAufgabe;
+    }
+    
+    public void setFolgeAufgabe(Aufgabe folgeAufgabe) {
+        this.folgeAufgabe = folgeAufgabe;
     }
     
     public abstract Aufgabentyp getTyp();

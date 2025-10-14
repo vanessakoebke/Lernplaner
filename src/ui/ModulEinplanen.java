@@ -29,6 +29,7 @@ public class ModulEinplanen extends JFrame {
     private java.util.List<Aufgabe> aufgabenListe = new ArrayList<>();
     private final Map<String, JPanel> alleSchritte = new LinkedHashMap<>();
     private final java.util.List<String> sichtbareSchritte = new ArrayList<>();
+    Aufgabe vorherige = null;
 
     public ModulEinplanen(Control control, Hauptfenster hf) {
         super(I18n.t("ui.Main.ButtonModulEinplanen"));
@@ -435,6 +436,7 @@ public class ModulEinplanen extends JFrame {
 
         @Override
         protected void addAufgaben() {
+            vorherige = null;
             for (JPanel p : panelListe) {
                 String titel = ((JTextField) p.getComponent(0)).getText();
                 Date startDate = (Date) ((JDatePickerImpl) p.getComponent(1)).getModel().getValue();
@@ -443,7 +445,11 @@ public class ModulEinplanen extends JFrame {
                 Date endDate = (Date) ((JDatePickerImpl) p.getComponent(2)).getModel().getValue();
                 LocalDate ende = endDate != null ? endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                         : null;
-                AufgabeDurcharbeiten ad = new AufgabeDurcharbeiten(titel, "", ende, start, Status.NEU, modul, 0);
+                AufgabeDurcharbeiten ad = new AufgabeDurcharbeiten(titel, "", ende, start, Status.NEU, modul, 0, null);
+                if (vorherige != null) {
+                    vorherige.setFolgeAufgabe(ad);
+                }
+                vorherige = ad;
                 aufgabenListe.add(ad);
             }
         }
@@ -494,6 +500,7 @@ public class ModulEinplanen extends JFrame {
 
         @Override
         protected void addAufgaben() {
+            vorherige = null;
             for (JPanel p : panelListe) {
                 String titel = ((JTextField) p.getComponent(0)).getText();
                 Date startDate = (Date) ((JDatePickerImpl) p.getComponent(1)).getModel().getValue();
@@ -502,7 +509,11 @@ public class ModulEinplanen extends JFrame {
                 Date endDate = (Date) ((JDatePickerImpl) p.getComponent(2)).getModel().getValue();
                 LocalDate ende = endDate != null ? endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                         : null;
-                AufgabeEA ea = new AufgabeEA(titel, "", ende, start, Status.NEU, modul, "");
+                AufgabeEA ea = new AufgabeEA(titel, "", ende, start, Status.NEU, modul, "", null);
+                if (vorherige != null) {
+                    vorherige.setFolgeAufgabe(ea);
+                }
+                vorherige = ea;
                 aufgabenListe.add(ea);
             }
         }
@@ -588,6 +599,14 @@ public class ModulEinplanen extends JFrame {
 
         @Override
         protected void addAufgaben() {
+            vorherige = null;
+            for (int i = aufgabenListe.size() - 1; i >= 0; i--) {
+                if (aufgabenListe.get(i).getTyp() == Aufgabentyp.DURCHARBEITEN || aufgabenListe.get(i).getTyp() ==  Aufgabentyp.EA) {
+                    vorherige = aufgabenListe.get(i);
+                    break; // gefunden, Schleife beenden
+                }
+            }
+
             for (JPanel p : panelListe) {
                 String titel = ((JTextField) p.getComponent(0)).getText();
                 Date startDate = (Date) ((JDatePickerImpl) p.getComponent(1)).getModel().getValue();
@@ -596,7 +615,11 @@ public class ModulEinplanen extends JFrame {
                 Date endDate = (Date) ((JDatePickerImpl) p.getComponent(2)).getModel().getValue();
                 LocalDate ende = endDate != null ? endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                         : null;
-                AufgabeAltklausur ak = new AufgabeAltklausur(titel, "", ende, start, Status.NEU, modul, "");
+                AufgabeAltklausur ak = new AufgabeAltklausur(titel, "", ende, start, Status.NEU, modul, "", null);
+                if (vorherige != null) {
+                    vorherige.setFolgeAufgabe(ak);
+                }
+                vorherige = ak;
                 aufgabenListe.add(ak);
             }
         }

@@ -8,22 +8,22 @@ public class AufgabeWiederholen extends Aufgabe {
     private int einheiten;
     private Lerneinheit einheitstyp; 
 
-    public AufgabeWiederholen(String name, String beschreibung,  LocalDate ende, LocalDate start, Status status, Modul modul, int einheiten, Lerneinheit einheitstyp) {
-        super(name,"", ende, start, status, modul);
+    public AufgabeWiederholen(String name, String beschreibung,  LocalDate ende, LocalDate start, Status status, Modul modul, int einheiten, Lerneinheit einheitstyp, Aufgabe folgeAufgabe) {
+        super(name,"", ende, start, status, modul, folgeAufgabe);
         this.einheiten = einheiten;
         this.einheitstyp = einheitstyp;
     }
 
 
     public AufgabeWiederholen() {
-        this(I18n.t("model.Aufgabentyp.Wiederholen"), "", null, null, Status.NEU, null, 0, null);
+        this(I18n.t("model.Aufgabentyp.Wiederholen"), "", null, null, Status.NEU, null, 0, null, null);
     }
 
     public void einplanenTaeglich() {
         int einheitenProTag = einheiten / (int) getTageBisFaellig() ;
-        for (int i = 1; i <= getTageBisFaellig(); i++) {
-            addTeilaufgabe(new AufgabeWiederholen(einheitstyp.toString() + " " + i, "", getStart(), getStart().plusDays(i-1), Status.NEU, getModul(), einheitenProTag, einheitstyp));
-        }
+//        for (int i = 1; i <= getTageBisFaellig(); i++) {
+//            addTeilaufgabe(new AufgabeWiederholen(einheitstyp.toString() + " " + i, "", getStart(), getStart().plusDays(i-1), Status.NEU, getModul(), einheitenProTag, einheitstyp));
+//        }
     }
 
     public int getEinheiten() {

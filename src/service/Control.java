@@ -3,7 +3,7 @@ package service;
 import java.io.File;
 
 import lang.I18n;
-import model.Einstellungen;
+import model.*;
 
 public class Control {
     private AufgabenManager am;
@@ -17,7 +17,7 @@ public class Control {
         this.db = new DatenbankService();
         db.init();
         this.persistenz =  new Persistenz();
-        this.am = new AufgabenManager(persistenz.aufgabenLaden());
+        this.am = new AufgabenManager(persistenz.aufgabenLaden(), this);
         this.mm = persistenz.moduleLaden();
         this.einstellungen = persistenz.einstellungenLaden();
         I18n.load(einstellungen.getSprachcode());
@@ -67,7 +67,7 @@ public class Control {
         db.init();
 
         // Aufgaben und Module neu laden
-        this.am = new AufgabenManager(persistenz.aufgabenLaden());
+        this.am = new AufgabenManager(persistenz.aufgabenLaden(), this);
         this.mm = persistenz.moduleLaden();
 
         // Einstellungen neu laden
@@ -78,6 +78,8 @@ public class Control {
 
         System.out.println("✅ Daten wurden erfolgreich neu geladen.");
     }
+
+
 
     
 }

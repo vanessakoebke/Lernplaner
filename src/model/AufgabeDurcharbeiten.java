@@ -8,28 +8,28 @@ import lang.I18n;
 public class AufgabeDurcharbeiten extends Aufgabe {
     private int seiten;
 
-    public AufgabeDurcharbeiten(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul, int seiten) {
-        super(titel, beschreibung, ende, start, status, modul);
+    public AufgabeDurcharbeiten(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul, int seiten, Aufgabe folgeAufgabe) {
+        super(titel, beschreibung, ende, start, status, modul, folgeAufgabe);
         this.seiten = seiten;
     }
 
     public AufgabeDurcharbeiten(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul, int seiten,
-            int anzahlTeilaufgaben) {
-        super(titel, beschreibung, ende, start, status, modul);
+            int anzahlTeilaufgaben, AufgabeDurcharbeiten folgeAufgabe) {
+        super(titel, beschreibung, ende, start, status, modul, folgeAufgabe);
         this.seiten = seiten;
         
-        if (anzahlTeilaufgaben != 0) {
-            int seitenzahlProAufgabe = seiten / anzahlTeilaufgaben;
-            long tageProAufgabe = this.getTageBisFaellig() / anzahlTeilaufgaben;
-            LocalDate startProAufgabe = LocalDate.now();
-            LocalDate endeProAufgabe = LocalDate.now();
-            for (int i = 1; i <= anzahlTeilaufgaben; i++) {
-                endeProAufgabe = endeProAufgabe.plusDays(tageProAufgabe);
-                addTeilaufgabe(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Lektion") + " " + i, "",
-                        endeProAufgabe, startProAufgabe, Status.NEU, modul, seitenzahlProAufgabe));
-                startProAufgabe = startProAufgabe.plusDays(tageProAufgabe);
-            } 
-        }
+//        if (anzahlTeilaufgaben != 0) {
+//            int seitenzahlProAufgabe = seiten / anzahlTeilaufgaben;
+//            long tageProAufgabe = this.getTageBisFaellig() / anzahlTeilaufgaben;
+//            LocalDate startProAufgabe = LocalDate.now();
+//            LocalDate endeProAufgabe = LocalDate.now();
+//            for (int i = 1; i <= anzahlTeilaufgaben; i++) {
+//                endeProAufgabe = endeProAufgabe.plusDays(tageProAufgabe);
+//                addTeilaufgabe(new AufgabeDurcharbeiten(I18n.t("model.Aufgabentyp.Lektion") + " " + i, "",
+//                        endeProAufgabe, startProAufgabe, Status.NEU, modul, seitenzahlProAufgabe));
+//                startProAufgabe = startProAufgabe.plusDays(tageProAufgabe);
+//            } 
+//        }
     }
     
     public int getSeiten() {

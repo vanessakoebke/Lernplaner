@@ -18,17 +18,17 @@ public enum Status {
         switch (i) {
         case 0: return NEU;
         case 1: return ANGEFANGEN;
-        case 2: return ERLEDIGT;
-        case 3: return WARTEND;
+        case 2: return WARTEND;
+        case 3: return ERLEDIGT;
         default: return NEU;
         }
     }
     public int toInt() {
         switch (this) {
-        case ERLEDIGT: return 2;
-        case ANGEFANGEN: return 1;
-        case WARTEND: return 3;
         case NEU: return 0;
+        case ANGEFANGEN: return 1;
+        case WARTEND: return 2;
+        case ERLEDIGT: return 3;
         default: return 0;
         }
     }

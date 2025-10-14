@@ -22,7 +22,7 @@ public class AufgabeAllgemein extends Aufgabe implements Serializable {
     }
     
     public AufgabeAllgemein(String titel, String beschreibung, LocalDate ende, LocalDate start, Status status, Modul modul) {
-        super(titel, beschreibung, ende, start, status, modul);
+        super(titel, beschreibung, ende, start, status, modul, null);
     }
 
 

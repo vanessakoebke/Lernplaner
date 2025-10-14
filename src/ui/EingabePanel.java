@@ -4,6 +4,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.*;
@@ -17,7 +18,6 @@ import service.Kalender;
 import util.CalendarFormatter;
 
 public class EingabePanel extends JPanel implements IAnsicht {
-
     private boolean neueingabe = false;
     private Aufgabe aufgabe;
     private JComboBox<Modul> modulFeld;
@@ -31,7 +31,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
     private JTextField ergebnisFeld;
     private JTextField einheitenFeld;
     private JComboBox<Lerneinheit> einheitenDropdown;
-
+    private JComboBox<Aufgabe> folgeAufgabenDropdown;
     private Control control;
 
     // Konstruktor für neue Aufgabe
@@ -56,11 +56,9 @@ public class EingabePanel extends JPanel implements IAnsicht {
         DateTimeFormatter formatter = control.getEinstellungen().getDatumsformat();
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-
         // Modul
         JLabel modulLabel = new JLabel(I18n.t("model.Aufgabentyp.Modul"));
         modulFeld = new JComboBox<>(control.getMm().getAktuelleModule().toArray(new Modul[0]));
@@ -69,7 +67,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(modulLabel, gbc);
         gbc.gridx = 1;
         this.add(modulFeld, gbc);
-
         // Aufgabentyp
         JLabel aufgabentypLabel = new JLabel(I18n.t("model.Aufgabentyp.Typ"));
         aufgabentypFeld = new JComboBox<>(Aufgabentyp.values());
@@ -78,10 +75,9 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(aufgabentypLabel, gbc);
         gbc.gridx = 1;
         this.add(aufgabentypFeld, gbc);
-        if(!neueingabe) {
+        if (!neueingabe) {
             aufgabentypFeld.setEnabled(false);
         }
-
         // Titel
         JLabel titelLabel = new JLabel(I18n.t("ui.Common.Aufgabenname"));
         titelFeld = new JTextField();
@@ -92,7 +88,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(titelLabel, gbc);
         gbc.gridx = 1;
         this.add(titelFeld, gbc);
-
         // Beschreibung
         JLabel beschreibungLabel = new JLabel(I18n.t("ui.Common.Beschreibung"));
         beschreibungFeld = new JTextArea(4, 20);
@@ -105,7 +100,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(beschreibungLabel, gbc);
         gbc.gridx = 1;
         this.add(beschreibungScroll, gbc);
-
         // Startdatum
         JLabel startLabel = new JLabel(I18n.t("ui.Common.Start"));
         UtilDateModel startModel = new UtilDateModel();
@@ -116,7 +110,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(startLabel, gbc);
         gbc.gridx = 1;
         this.add(startFeld, gbc);
-
         // Enddatum
         JLabel endeLabel = new JLabel(I18n.t("ui.Common.Faelligkeit"));
         UtilDateModel endeModel = new UtilDateModel();
@@ -127,7 +120,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(endeLabel, gbc);
         gbc.gridx = 1;
         this.add(endeFeld, gbc);
-
         // Status
         JLabel statusLabel = new JLabel(I18n.t("ui.Common.Status"));
         statusFeld = new JComboBox<>(Status.values());
@@ -136,8 +128,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(statusLabel, gbc);
         gbc.gridx = 1;
         this.add(statusFeld, gbc);
-
-        
         // Seiten für DURCHARBEITEN
         JLabel seitenLabel = new JLabel(I18n.t("model.Lerneinheiten.Seiten"));
         seitenDurcharbeitenFeld = new JTextField();
@@ -148,19 +138,16 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(seitenLabel, gbc);
         gbc.gridx = 1;
         this.add(seitenDurcharbeitenFeld, gbc);
-        if (!(aufgabe instanceof AufgabeDurcharbeiten) ) {
+        if (!(aufgabe instanceof AufgabeDurcharbeiten)) {
             seitenLabel.setVisible(false);
             seitenDurcharbeitenFeld.setVisible(false);
         }
-
         aufgabentypFeld.addActionListener(e -> {
             Aufgabentyp typ = (Aufgabentyp) aufgabentypFeld.getSelectedItem();
             boolean sichtbar = typ == Aufgabentyp.DURCHARBEITEN;
             seitenLabel.setVisible(sichtbar);
             seitenDurcharbeitenFeld.setVisible(sichtbar);
         });
-        
-        
         // Einheiten für WIEDERHOLEN
         JLabel einheitenLabel = new JLabel(I18n.t("model.Lerneinheiten.Einheiten"));
         einheitenFeld = new JTextField(5);
@@ -177,13 +164,11 @@ public class EingabePanel extends JPanel implements IAnsicht {
         this.add(einheitenLabel, gbc);
         gbc.gridx = 1;
         this.add(einheitenPanel, gbc);
-
-        if (!(aufgabe instanceof AufgabeWiederholen) ) {
+        if (!(aufgabe instanceof AufgabeWiederholen)) {
             einheitenLabel.setVisible(false);
             einheitenFeld.setVisible(false);
             einheitenDropdown.setVisible(false);
         }
-
         aufgabentypFeld.addActionListener(e -> {
             Aufgabentyp typ = (Aufgabentyp) aufgabentypFeld.getSelectedItem();
             boolean sichtbar = typ == Aufgabentyp.WIEDERHOLEN;
@@ -191,8 +176,6 @@ public class EingabePanel extends JPanel implements IAnsicht {
             einheitenFeld.setVisible(sichtbar);
             einheitenDropdown.setVisible(sichtbar);
         });
-
-        
         // Ergebnis für EA und Altklausur
         JLabel ergebnisLabel = new JLabel(I18n.t("model.Ergebnis"));
         ergebnisFeld = new JTextField();
@@ -207,19 +190,32 @@ public class EingabePanel extends JPanel implements IAnsicht {
             ergebnisLabel.setVisible(false);
             ergebnisFeld.setVisible(false);
         }
+        // Folgeaufgabe
+        JLabel folgeLabel = new JLabel(I18n.t("ui.Common.Folgeaufgabe"));
+        refreshFolgeAufgaben();
+        gbc.gridx = 0;
+        gbc.gridy = 25;
+        this.add(folgeLabel, gbc);
+        gbc.gridx = 1;
+        this.add(folgeAufgabenDropdown, gbc);
         
+        //Action-Listener
+        modulFeld.addActionListener(e-> {
+            refreshFolgeAufgaben();
+        });
         
         aufgabentypFeld.addActionListener(e -> {
             Status status = (Status) statusFeld.getSelectedItem();
             Aufgabentyp typ = (Aufgabentyp) aufgabentypFeld.getSelectedItem();
-            boolean sichtbar = (((typ == Aufgabentyp.EA) || (typ == Aufgabentyp.ALTKLAUSUR)) && (statusFeld.getSelectedItem() == Status.ERLEDIGT));
+            boolean sichtbar = (((typ == Aufgabentyp.EA) || (typ == Aufgabentyp.ALTKLAUSUR))
+                    && (status == Status.ERLEDIGT));
             ergebnisLabel.setVisible(sichtbar);
             ergebnisFeld.setVisible(sichtbar);
             if (typ == Aufgabentyp.EA) {
                 titelFeld.setText(I18n.t("model.Aufgabentyp.EA_abr") + " ");
-            } else if (typ == Aufgabentyp.ALTKLAUSUR){
+            } else if (typ == Aufgabentyp.ALTKLAUSUR) {
                 titelFeld.setText(I18n.t("model.Aufgabentyp.Altklausur") + " ");
-            }else {
+            } else {
                 String aktuell = titelFeld.getText();
                 if (!aktuell.isEmpty() && aktuell.contains(I18n.t("model.Aufgabentyp.EA_abr") + " ")) {
                     int laenge = (I18n.t("model.Aufgabentyp.EA_abr") + " ").length();
@@ -233,65 +229,64 @@ public class EingabePanel extends JPanel implements IAnsicht {
                 }
             }
         });
-        
         statusFeld.addActionListener(e -> {
             Status status = (Status) statusFeld.getSelectedItem();
             Aufgabentyp typ = (Aufgabentyp) aufgabentypFeld.getSelectedItem();
-            boolean sichtbar = (((typ == Aufgabentyp.EA) || (typ == Aufgabentyp.ALTKLAUSUR)) && (status == Status.ERLEDIGT));
+            boolean sichtbar = (((typ == Aufgabentyp.EA) || (typ == Aufgabentyp.ALTKLAUSUR))
+                    && (status == Status.ERLEDIGT));
             ergebnisLabel.setVisible(sichtbar);
             ergebnisFeld.setVisible(sichtbar);
         });
+        statusFeld.addActionListener(e -> {
+            Status neuerStatus = (Status) statusFeld.getSelectedItem();
+            control.getAm().statusAendern(aufgabe, neuerStatus);
+        });
 
-
-    
+        
+        
     }
-
 
     public Aufgabe getAufgabe() {
         Date startDate = (Date) startFeld.getModel().getValue();
         LocalDate start = startDate != null ? startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
         Date endDate = (Date) endeFeld.getModel().getValue();
         LocalDate ende = endDate != null ? endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
-
         Aufgabentyp typ = (Aufgabentyp) aufgabentypFeld.getSelectedItem();
-
         if (neueingabe) {
             switch (typ) {
-                case DURCHARBEITEN:
-                    int seiten = 0;
-                    try {
-                        seiten = Integer.parseInt(seitenDurcharbeitenFeld.getText());
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null,
-                                I18n.t("Common.Errors.UngueltigeSeiten"),
-                                I18n.t("Common.Errors.Warnung"),
-                                JOptionPane.WARNING_MESSAGE);
-                    }
-                    return new AufgabeDurcharbeiten(titelFeld.getText(), beschreibungFeld.getText(),
-                            ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), seiten);
-                case EA:
-                    System.out.println(titelFeld.getText());
-                    return new AufgabeEA(titelFeld.getText(), beschreibungFeld.getText(),
-                            ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), ergebnisFeld.getText());
-                case ALTKLAUSUR:
-                    return new AufgabeAltklausur(titelFeld.getText(), beschreibungFeld.getText(),
-                            ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), ergebnisFeld.getText());
-                case WIEDERHOLEN:
-                    int einheiten = 0;
-                    try {
-                        einheiten = Integer.parseInt(einheitenFeld.getText());
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null,
-                                I18n.t("Common.Errors.UngueltigeSeiten"), //TODO warnung anpassen
-                                I18n.t("Common.Errors.Warnung"),
-                                JOptionPane.WARNING_MESSAGE);
-                    }
-                    return new AufgabeWiederholen(titelFeld.getText(), beschreibungFeld.getText(),
-                            ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), einheiten, (Lerneinheit) einheitenDropdown.getSelectedItem());
-                    
-                default:
-                    return new AufgabeAllgemein(titelFeld.getText(), beschreibungFeld.getText(),
-                            ende, start, (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem());
+            case DURCHARBEITEN:
+                int seiten = 0;
+                try {
+                    seiten = Integer.parseInt(seitenDurcharbeitenFeld.getText());
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, I18n.t("Common.Errors.UngueltigeSeiten"),
+                            I18n.t("Common.Errors.Warnung"), JOptionPane.WARNING_MESSAGE);
+                }
+                return new AufgabeDurcharbeiten(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), seiten, (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
+            case EA:
+                return new AufgabeEA(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(),
+                        ergebnisFeld.getText(), (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
+            case ALTKLAUSUR:
+                return new AufgabeAltklausur(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(),
+                        ergebnisFeld.getText(), (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
+            case WIEDERHOLEN:
+                int einheiten = 0;
+                try {
+                    einheiten = Integer.parseInt(einheitenFeld.getText());
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, I18n.t("Common.Errors.UngueltigeSeiten"), // TODO warnung
+                                                                                                  // anpassen
+                            I18n.t("Common.Errors.Warnung"), JOptionPane.WARNING_MESSAGE);
+                }
+                return new AufgabeWiederholen(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), einheiten,
+                        (Lerneinheit) einheitenDropdown.getSelectedItem(), (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
+            default:
+                return new AufgabeAllgemein(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
+                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem());
             }
         } else {
             // bestehende Aufgabe updaten
@@ -301,27 +296,21 @@ public class EingabePanel extends JPanel implements IAnsicht {
             aufgabe.setEnde(ende);
             aufgabe.setStatus((Status) statusFeld.getSelectedItem());
             aufgabe.setModul((Modul) modulFeld.getSelectedItem());
-
+            aufgabe.setFolgeAufgabe((Aufgabe) folgeAufgabenDropdown.getSelectedItem());
             if (aufgabe instanceof AufgabeDurcharbeiten) {
                 try {
-                    ((AufgabeDurcharbeiten) aufgabe)
-                            .setSeiten(Integer.parseInt(seitenDurcharbeitenFeld.getText()));
+                    ((AufgabeDurcharbeiten) aufgabe).setSeiten(Integer.parseInt(seitenDurcharbeitenFeld.getText()));
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null,
-                            I18n.t("Common.Errors.UngueltigeSeiten"),
-                            I18n.t("Common.Errors.Warnung"),
-                            JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, I18n.t("Common.Errors.UngueltigeSeiten"),
+                            I18n.t("Common.Errors.Warnung"), JOptionPane.WARNING_MESSAGE);
                 }
             } else if (aufgabe instanceof AufgabeWiederholen) {
                 try {
-                    ((AufgabeWiederholen) aufgabe)
-                            .setEinheiten(Integer.parseInt(einheitenFeld.getText()));
+                    ((AufgabeWiederholen) aufgabe).setEinheiten(Integer.parseInt(einheitenFeld.getText()));
                     ((AufgabeWiederholen) aufgabe).setEinheitstyp((Lerneinheit) einheitenDropdown.getSelectedItem());
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null,
-                            I18n.t("Common.Errors.UngueltigeSeiten"), //TODO anpassen
-                            I18n.t("Common.Errors.Warnung"),
-                            JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, I18n.t("Common.Errors.UngueltigeSeiten"), // TODO anpassen
+                            I18n.t("Common.Errors.Warnung"), JOptionPane.WARNING_MESSAGE);
                 }
             } else if (aufgabe instanceof AufgabeEA) {
                 ((AufgabeEA) aufgabe).setErgebnis(ergebnisFeld.getText());
@@ -335,8 +324,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
     private void setAufgabe(Aufgabe aufgabe) {
         this.aufgabe = aufgabe;
         this.neueingabe = false;
-
-     // Modul nach ID suchen und auswählen
+        // Modul nach ID suchen und auswählen
         Modul aufgabenModul = aufgabe.getModul();
         for (int i = 0; i < modulFeld.getItemCount(); i++) {
             Modul m = modulFeld.getItemAt(i);
@@ -345,48 +333,83 @@ public class EingabePanel extends JPanel implements IAnsicht {
                 break;
             }
         }
-
         aufgabentypFeld.setSelectedItem(aufgabe.getTyp());
         titelFeld.setText(aufgabe.getTitel());
         beschreibungFeld.setText(aufgabe.getBeschreibung());
-
         if (aufgabe.getStart() != null) {
-            ((UtilDateModel) startFeld.getModel()).setValue(
-                Date.from(aufgabe.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant())
-            );
+            ((UtilDateModel) startFeld.getModel())
+                    .setValue(Date.from(aufgabe.getStart().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             ((UtilDateModel) startFeld.getModel()).setSelected(true);
         }
-
         if (aufgabe.getEnde() != null) {
-            ((UtilDateModel) endeFeld.getModel()).setValue(
-                Date.from(aufgabe.getEnde().atStartOfDay(ZoneId.systemDefault()).toInstant())
-            );
+            ((UtilDateModel) endeFeld.getModel())
+                    .setValue(Date.from(aufgabe.getEnde().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             ((UtilDateModel) endeFeld.getModel()).setSelected(true);
         }
-
-
         statusFeld.setSelectedItem(aufgabe.getStatus());
-
         if (aufgabe instanceof AufgabeDurcharbeiten) {
-            seitenDurcharbeitenFeld.setText(
-                    String.valueOf(((AufgabeDurcharbeiten) aufgabe).getSeiten())
-            );
+            seitenDurcharbeitenFeld.setText(String.valueOf(((AufgabeDurcharbeiten) aufgabe).getSeiten()));
             seitenDurcharbeitenFeld.setVisible(true);
         }
-        
         if (aufgabe instanceof AufgabeEA) {
             ergebnisFeld.setText(((AufgabeEA) aufgabe).getErgebnis());
         }
-        
         if (aufgabe instanceof AufgabeAltklausur) {
             ergebnisFeld.setText(((AufgabeAltklausur) aufgabe).getErgebnis());
         }
-        
         if (aufgabe instanceof AufgabeWiederholen) {
             einheitenFeld.setText(String.valueOf(((AufgabeWiederholen) aufgabe).getEinheiten()));
             einheitenDropdown.setSelectedItem(((AufgabeWiederholen) aufgabe).getEinheitstyp());
         }
+        refreshFolgeAufgaben();
     }
+
+    private void refreshFolgeAufgaben() {
+        if (folgeAufgabenDropdown == null) {
+            folgeAufgabenDropdown = new JComboBox<>();
+        }
+
+        Modul modul = (Modul) modulFeld.getSelectedItem();
+        DefaultComboBoxModel<Aufgabe> model = new DefaultComboBoxModel<>();
+        model.addElement(null); // "Keine" Auswahl immer oben
+
+        if (modul != null) {
+            java.util.List<Aufgabe> folgeaufgaben = new ArrayList<>();
+            for (Aufgabe a : control.getAm().getAufgabenListe(modul)) {
+                    folgeaufgaben.add(a);
+            }
+
+            // Optional: alphabetisch nach Titel sortieren
+            folgeaufgaben.sort((a1, a2) -> a1.getTitel().compareToIgnoreCase(a2.getTitel()));
+
+            for (Aufgabe a : folgeaufgaben) {
+                model.addElement(a);
+            }
+        }
+
+        folgeAufgabenDropdown.setModel(model);
+
+        // Renderer setzen, um nur den Titel anzuzeigen
+        folgeAufgabenDropdown.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                if (value == null) {
+                    setText(I18n.t("ui.Common.Keine"));
+                } else if (value instanceof Aufgabe a) {
+                    setText(a.getTitel());
+                }
+                return this;
+            }
+        });
+        if (aufgabe != null && aufgabe.getFolgeAufgabe() != null) {
+            folgeAufgabenDropdown.setSelectedItem(aufgabe.getFolgeAufgabe());
+        } else {
+            folgeAufgabenDropdown.setSelectedIndex(0); // "Keine" als Standard
+        }
+    }
+
 
     @Override
     public void refresh() {

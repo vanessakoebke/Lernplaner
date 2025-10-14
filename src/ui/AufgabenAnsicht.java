@@ -3,7 +3,10 @@ package ui;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import lang.I18n;
 import model.*;
@@ -36,7 +39,7 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
             return control.getAm().getAktuelle();
         case 2:
             return control.getAm().filter(e -> 
-                e.getStart() != null && e.getStart().isBefore(LocalDate.now().minusDays(1)) && !e.isErledigt()
+                e.getStart() != null && !e.getStart().isAfter(LocalDate.now()) && !e.isErledigt()
             );
         default:
             return control.getAm().getAktuelle();
@@ -78,30 +81,29 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Aufgabe a = getBackingList().get(rowIndex);
+        List<Aufgabe> list = getBackingList();
+        if (rowIndex < 0 || rowIndex >= list.size()) {
+            return null; // sicherstellen, dass kein IndexOutOfBounds passiert
+        }
+        Aufgabe a = list.get(rowIndex);
         switch (columnIndex) {
-        case 0:
-            return a.getModul();
-        case 1:
-            return a.getTitel();
-        case 2:
-            return a.getBeschreibung() != null ? a.getBeschreibung() : "";
-        case 3: 
-            return a.getStart();  // LocalDate direkt zurückgeben
-        case 4: 
-            return a.getEnde();   // LocalDate direkt zurückgeben
-        case 5:
-            return a.getStatus();
-        default:
-            return "";
+            case 0: return a.getModul();
+            case 1: return a.getTitel();
+            case 2: return a.getBeschreibung() != null ? a.getBeschreibung() : "";
+            case 3: return a.getStart();
+            case 4: return a.getEnde();
+            case 5: return a.getStatus();
+            default: return "";
         }
     }
+
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == 5 && aValue instanceof Status) {
             Aufgabe aufgabe = getBackingList().get(rowIndex);
-            aufgabe.setStatus((Status) aValue);
+            control.getAm().statusAendern(aufgabe, (Status) aValue);
+            refresh();
             fireTableDataChanged();
         }
     }
@@ -120,15 +122,33 @@ public class AufgabenAnsicht extends AbstractTableModel implements IAnsicht {
         return getBackingList().get(row);
     }
 
-    public void removeAufgabe(int row, int id) {
+    public void removeAufgabe(int row, int id, JTable table) {
+        if (table != null && table.isEditing()) {
+            table.getCellEditor().stopCellEditing();
+        }
+
+        RowSorter<? extends TableModel> backup = null;
+        if (table != null) {
+            backup = table.getRowSorter();
+            table.setRowSorter(null);
+        }
+
         Aufgabe zuLoeschen = control.getAm().getAufgabenListe().stream()
-                .filter(a -> a.getId() != null && a.getId() == id).findFirst().orElse(null);
+                .filter(a -> a.getId() != null && a.getId() == id)
+                .findFirst()
+                .orElse(null);
+
         if (zuLoeschen != null) {
             control.getAm().getAufgabenListe().remove(zuLoeschen);
             control.getDb().deleteAufgabe(zuLoeschen);
             fireTableDataChanged();
         }
+
+        if (table != null && backup != null) {
+            table.setRowSorter(backup);
+        }
     }
+
 
     @Override
     public void refresh() {

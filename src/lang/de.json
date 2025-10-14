@@ -27,7 +27,9 @@
       "Beschreibung": "Notizen",
 	  "Start": "Start am",
       "Faelligkeit": "Fällig am",
-      "Status": "Status"
+      "Status": "Status",
+	  "Folgeaufgabe": "Folgeaufgabe",
+	  "Keine": "keine"
     },
     "Main": {
       "FensterTitel": "Lernplaner",
