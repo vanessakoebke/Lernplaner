@@ -46,7 +46,11 @@ public class Fortschritt extends JPanel implements IAnsicht {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Color progressColor = Color.decode("#68c5f7"); // modernes Blau
+        Color progressColor = UIManager.getColor("textHighlight");      // System-Akzentfarbe
+        if (progressColor == null) {
+            progressColor = new Color(0, 122, 255); // macOS-Blau
+        }
+        
         Color backgroundColor = Color.decode("#f5f5f5"); // noch helleres Grau
         Color textColor = Color.BLACK;
 

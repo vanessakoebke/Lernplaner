@@ -94,7 +94,7 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         add(center, BorderLayout.CENTER);
         
         //Seitliches Panel
-        JPanel westPanel = new NavigationsPanel(this);
+        JPanel westPanel = new NavigationPanel(this);
         
         // Unteres Panel
         JPanel southPanel = new JPanel(new FlowLayout());

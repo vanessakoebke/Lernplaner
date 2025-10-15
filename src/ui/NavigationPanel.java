@@ -7,8 +7,8 @@ import javax.swing.*;
 
 import util.FALoader;
 
-public class NavigationsPanel extends JPanel {
-    public NavigationsPanel(Hauptfenster hf) {
+public class NavigationPanel extends JPanel {
+    public NavigationPanel(Hauptfenster hf) {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -54,7 +54,6 @@ public class NavigationsPanel extends JPanel {
         });
         this.add(buttonFortschritt, gbc);
         setPreferredSize(new java.awt.Dimension(80, 0));
-        setBackground(new java.awt.Color(245, 245, 245)); // leichtes Grau
         setVisible(true);
     }
 }
