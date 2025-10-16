@@ -11,6 +11,7 @@ public class Control {
     private Einstellungen einstellungen;
     private Persistenz persistenz;
     private DatenbankService db;
+    private LGManager lm;
     
     public Control() {
         new File("data").mkdirs();
@@ -33,6 +34,14 @@ public class Control {
 
     public void setAm(AufgabenManager am) {
         this.am = am;
+    }
+    
+    public LGManager getLm() {
+        return lm;
+    }
+
+    public void setLm(LGManager lm) {
+        this.lm = lm;
     }
 
     public ModulManager getMm() {

@@ -10,7 +10,7 @@ import service.Control;
 import ui.buttons.CancelButton;
 
 public class AufgabeBearbeiten extends JFrame {
-    private EingabePanel eingabePanel;
+    private EingabePanelAufgabe eingabePanel;
     private AufgabenAnsicht aufgabenAnsicht;
     private Aufgabe aufgabe;
 
@@ -18,7 +18,7 @@ public class AufgabeBearbeiten extends JFrame {
         super(I18n.t("ui.AufgabeBearbeiten.FensterTitel"));
         this.aufgabenAnsicht = aufgabenAnsicht;
         aufgabe = aufgabenAnsicht.getAufgabe(row);
-        this.eingabePanel = new EingabePanel(aufgabe, control);
+        this.eingabePanel = new EingabePanelAufgabe(aufgabe, control);
         // Buttons
         JButton buttonAbbrechen = new CancelButton();
         JButton buttonOk = new JButton(I18n.t("Common.ButtonOk"));

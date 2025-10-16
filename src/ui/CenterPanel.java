@@ -29,7 +29,7 @@ public class CenterPanel extends JPanel implements IAnsicht {
         initAufgabenAnsichtAlt(control);
         initAufgabenAnsichtInArbeit(control);
         initFortschrittAnsicht(control);
-        showPanel(0); 
+        showPanel(2); 
     }
 
     private void initAufgabenAnsichtAktuell(Control control) {

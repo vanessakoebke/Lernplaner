@@ -1,35 +1,38 @@
 package ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+
 import javax.swing.*;
 
 import lang.I18n;
-import model.*;
-import service.*;
-import ui.buttons.*;
+import model.Lerngruppe;
+import service.Control;
+import ui.buttons.CancelButton;
 
-public class NeueAufgabe extends JFrame {
+public class NeueLerngruppe extends JFrame{
     private CenterPanel center;
-    private EingabePanelAufgabe eingabePanel;
-
-    public NeueAufgabe(CenterPanel center, Control control) {
-        super(I18n.t("ui.NeueAufgabe.FensterTitel"));
+    private EingabePanelLg eingabePanel;
+    
+    public NeueLerngruppe(CenterPanel center, Control control) {
+        super(I18n.t("ui.Lerngruppe.FensterTitel"));
         this.center = center;
-        this.eingabePanel = new EingabePanelAufgabe(control);
-
+        
+        //EingabePanel
+        eingabePanel = new EingabePanelLg(control);
+        
         // Buttons
         JButton buttonAbbrechen = new CancelButton();
 
         JButton buttonHinzu = new JButton(I18n.t("Common.ButtonHinzufuegen"));
         buttonHinzu.addActionListener(e -> {
-            Aufgabe aufgabe = eingabePanel.getAufgabe();
+            Lerngruppe lg = eingabePanel.getLg();
             
             // 1. In den globalen AufgabenManager speichern
-            control.getAm().addAufgabe(aufgabe);
+            control.getLm().addLg(lg);
 
             // 2. In die Datenbank speichern
-            if (aufgabe.getId() == null) {
-                control.getDb().upsertAufgabe(aufgabe);
+            if (lg.getId() == null) {
+                control.getDb().upsertLg(lg);
             }
 
             // 3. TableModel refreshen
@@ -49,5 +52,8 @@ public class NeueAufgabe extends JFrame {
         setSize(500, 600);
         setLocationRelativeTo(null);
         setVisible(true);
+        
     }
+    
+
 }

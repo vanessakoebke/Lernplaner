@@ -24,12 +24,16 @@
   "ui": {
     "Common": {
       "Aufgabenname": "Aufgabenname",
+	  "Name": "Name",
       "Beschreibung": "Notizen",
 	  "Start": "Start am",
       "Faelligkeit": "Fällig am",
       "Status": "Status",
 	  "Folgeaufgabe": "Folgeaufgabe",
-	  "Keine": "keine"
+	  "Keine": "keine",
+	  "Wochentag": "Wochentag",
+	  "Uhrzeit": "Uhrzeit",
+	  "Ende": "Endet am"
     },
     "Main": {
       "FensterTitel": "Lernplaner",
@@ -41,6 +45,11 @@
     },
 	"AufgabeBearbeiten": {
 	  "FensterTitel": "Aufgabe bearbeiten"	
+	},
+	"Lerngruppe": {
+		"Fenstertitel": "Neue Lerngruppe",
+		"LG": "Lerngruppe",
+		"LG_abr": "LG"
 	},
     "EingabePanel": {
       "Datumsformat": "TT.MM.JJJJ"
@@ -75,7 +84,7 @@
   "model": {
 	"StatusNeu": "noch nicht begonnen",
 	"StatusAngefangen": "begonnen",
-	"StatusWartend": "wartend";
+	"StatusWartend": "wartend",
 	"StatusErledigt": "erledigt",
 	"Module": "Module",
 	"ModuleVerwalten": "Module verwalten",
@@ -99,7 +108,8 @@
 		"EA_abr": "EA",
 		"Altklausur": "Altklausur",
 		"Allgemein": "Allgemein",
-		"Modul": "Modul"
+		"Modul": "Modul",
+		"LG": "Lerngruppe vorbereiten"
 		}
   }
 }

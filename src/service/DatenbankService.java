@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.*;
 
 import model.*;
@@ -20,7 +20,10 @@ public class DatenbankService {
     public void init() {
         createModuleTable();
         createAufgabenTable();
+        createLerngruppeTable();
+        createLerngruppeTermineTable();
     }
+
 
     private void createModuleTable() {
         String sql = "CREATE TABLE IF NOT EXISTS module (" + "id INTEGER PRIMARY KEY AUTOINCREMENT," // Tabelle anpassen
@@ -202,6 +205,7 @@ public class DatenbankService {
                     case EA -> aufgabe = new AufgabeEA(titel, beschreibung, ende, start, status, modul, ergebnis, null);
                     case ALTKLAUSUR -> aufgabe = new AufgabeAltklausur(titel, beschreibung, ende, start, status, modul, ergebnis, null);
                     case WIEDERHOLEN -> aufgabe = new AufgabeWiederholen(titel, beschreibung, ende, start, status, modul, einheiten, einheitstyp, null);
+                    case LG -> aufgabe = new AufgabeLerngruppe(titel, beschreibung, ende, start, status, modul, null);
                     default -> throw new IllegalArgumentException("Unbekannter Aufgabentyp: " + typ);
                 }
 
@@ -347,5 +351,215 @@ public class DatenbankService {
         }
         return null;
     }
+
+    private void createLerngruppeTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS lerngruppe (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "modulId INTEGER, " +
+                "titel TEXT NOT NULL, " +
+                "wochentag INTEGER, " +           // DayOfWeek (1=Montag ... 7=Sonntag)
+                "uhrzeit TEXT, " +                // LocalTime als String
+                "ende TEXT, " +        // Endtermin
+                "FOREIGN KEY(modulId) REFERENCES module(id)" +
+                ");";
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createLerngruppeTermineTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS lerngruppe_termine (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "lerngruppe_id INTEGER NOT NULL, " +
+                "datum TEXT NOT NULL, " +
+                "uhrzeit TEXT NOT NULL, " +
+                "aufgabe_id INTEGER, " +
+                "FOREIGN KEY(lerngruppe_id) REFERENCES lerngruppe(id), " +
+                "FOREIGN KEY(aufgabe_id) REFERENCES aufgabe(id)" +
+                ");";
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
+    public void upsertLg(Lerngruppe lg) {
+        boolean neu = lg.getId() == null;
+
+        String sqlInsert = "INSERT INTO lerngruppe (modulId, titel, wochentag, uhrzeit, wiederholung) VALUES (?, ?, ?, ?, ?)";
+        String sqlUpdate = "UPDATE lerngruppe SET modulId=?, titel=?, wochentag=?, uhrzeit=?, ende=? WHERE id=?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(neu ? sqlInsert : sqlUpdate, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setInt(1, lg.getModul() != null ? lg.getModul().getId() : Types.NULL);
+            pstmt.setString(2, lg.getTitel());
+            pstmt.setInt(3, lg.getWochentag().getValue());
+            pstmt.setString(4, lg.getUhrzeit() != null ? lg.getUhrzeit().toString() : null);
+            pstmt.setString(5, lg.getEnde()  != null ? lg.getEnde().toString() : null);
+
+            if (!neu) {
+                pstmt.setInt(6, lg.getId());
+            }
+
+            pstmt.executeUpdate();
+
+            if (neu) {
+                try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        lg.setId(keys.getInt(1));
+                    }
+                }
+            }
+
+            // Termine ebenfalls speichern
+            upsertTermine(lg);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void upsertTermine(Lerngruppe lg) {
+        if (lg.getTermine() == null) return;
+
+        String sqlInsert = "INSERT INTO lerngruppe_termine (lerngruppe_id, datum, uhrzeit, aufgabe_id) VALUES (?, ?, ?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sqlInsert)) {
+
+            for (Lerngruppe.Termin t : lg.getTermine()) {
+                pstmt.setInt(1, lg.getId());
+                pstmt.setString(2, t.getDatum().toString());
+                pstmt.setString(3, t.getUhrzeitTermin() != null ? t.getUhrzeitTermin().toString() : null);
+                if (t.getAufgabe() != null && t.getAufgabe().getId() != null)
+                    pstmt.setInt(4, t.getAufgabe().getId());
+                else
+                    pstmt.setNull(4, Types.INTEGER);
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public List<Lerngruppe> getLerngruppen(Modul modul) {
+        List<Lerngruppe> lerngruppen = new ArrayList<>();
+
+        String sql = "SELECT id, titel, wochentag, uhrzeit, wiederholung FROM lerngruppe WHERE modulId = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, modul.getId());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String titel = rs.getString("titel");
+                    DayOfWeek wochentag = DayOfWeek.of(rs.getInt("wochentag"));
+                    LocalTime uhrzeit = rs.getString("uhrzeit") != null ? LocalTime.parse(rs.getString("uhrzeit")) : null;
+                    LocalDate ende = rs.getString("ende") != null
+                            ? LocalDate.parse(rs.getString("ende"))
+                            : null;
+
+                    Lerngruppe lg = new Lerngruppe(modul, titel, wochentag, uhrzeit, ende);
+                    lg.setId(id);
+                    lg.setTermine(getTermine(lg)); // Termine laden
+
+                    lerngruppen.add(lg);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lerngruppen;
+    }
+    
+    public void removeLerngruppe(Lerngruppe lg) {
+        if (lg.getId() == null) return; // Lerngruppe existiert nicht in DB
+
+        try (Connection conn = connect()) {
+            conn.setAutoCommit(false); // Alles als Transaktion, damit wir bei Fehlern zurückrollen können
+
+            // 1️⃣ Alle Aufgaben der Lerngruppe löschen
+            String deleteAufgabenSql = "DELETE FROM aufgabe WHERE id IN (SELECT aufgabe_id FROM lerngruppe_termine WHERE lerngruppe_id = ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(deleteAufgabenSql)) {
+                pstmt.setInt(1, lg.getId());
+                pstmt.executeUpdate();
+            }
+
+            // 2️⃣ Alle Termine der Lerngruppe löschen
+            String deleteTermineSql = "DELETE FROM lerngruppe_termine WHERE lerngruppe_id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(deleteTermineSql)) {
+                pstmt.setInt(1, lg.getId());
+                pstmt.executeUpdate();
+            }
+
+            // 3️⃣ Lerngruppe selbst löschen
+            String deleteLgSql = "DELETE FROM lerngruppe WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(deleteLgSql)) {
+                pstmt.setInt(1, lg.getId());
+                pstmt.executeUpdate();
+            }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connect().rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+
+
+    private List<Lerngruppe.Termin> getTermine(Lerngruppe lg) {
+        List<Lerngruppe.Termin> termine = new ArrayList<>();
+
+        String sql = "SELECT id, datum, uhrzeit, aufgabe_id FROM lerngruppe_termine WHERE lerngruppe_id = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, lg.getId());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    LocalDate datum = LocalDate.parse(rs.getString("datum"));
+                    LocalTime uhrzeit = rs.getString("uhrzeit") != null ? LocalTime.parse(rs.getString("uhrzeit")) : null;
+                    Integer aufgabeId = rs.getInt("aufgabe_id");
+                    AufgabeLerngruppe aufgabe = null;
+
+                    if (!rs.wasNull()) {
+                        Aufgabe a = getAufgabeById(aufgabeId);
+                        if (a instanceof AufgabeLerngruppe) {
+                            aufgabe = (AufgabeLerngruppe) a;
+                        }
+                    }
+
+                    Lerngruppe.Termin t = lg.new Termin(datum, aufgabe);
+                    t.setUhrzeitTermin(uhrzeit);
+                    termine.add(t);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return termine;
+    }
+
 
 }

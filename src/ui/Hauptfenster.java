@@ -16,18 +16,15 @@ public class Hauptfenster extends JFrame implements IAnsicht {
     private Control control;
     private CenterPanel center;
     private int centerNr;
+    private ButtonPanelHf south;
+    private int southNr;
     
 
     public Hauptfenster(Control control) {
         super(I18n.t("ui.Main.FensterTitel"));
         centerNr = 0;
-        // Button neue Aufgabe
-        JButton buttonNeueAufgabe = new JButton(I18n.t("ui.Main.ButtonNeueAufgabe"));
-        buttonNeueAufgabe.addActionListener(e -> new NeueAufgabe(center, control));
+        southNr=0;
         
-        //Button Modul einplanen
-        JButton buttonModulPlanen = new JButton(I18n.t("ui.Main.ButtonModulEinplanen"));
-        buttonModulPlanen.addActionListener(e -> new ModulEinplanen(control, this));
         
         //Button Fortschritt anzeigen
         JButton buttonFortschritt = new JButton(I18n.t("ui.Fortschritt.FortschrittAnzeigen"));
@@ -88,6 +85,11 @@ public class Hauptfenster extends JFrame implements IAnsicht {
                 System.exit(0);
             }
         });
+        
+        //East-Panel -- Puffer
+        JPanel eastPanel = new JPanel();
+        eastPanel.setSize(30, 10);
+        add(eastPanel, BorderLayout.EAST);
 
         //Center Panel
         center = new CenterPanel(control);
@@ -95,11 +97,13 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         
         //Seitliches Panel
         JPanel westPanel = new NavigationPanel(this);
+        add(westPanel, BorderLayout.WEST);
         
-        // Unteres Panel
-        JPanel southPanel = new JPanel(new FlowLayout());
-        southPanel.add(buttonNeueAufgabe, 0);
-        southPanel.add(buttonModulPlanen, 1);
+        //South-Panel
+        south = new ButtonPanelHf(control, this);
+        add(south, BorderLayout.SOUTH);
+
+
         // Oberes Panel
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BorderLayout());
@@ -109,9 +113,6 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         northPanel.add(buttonEinstellungen, BorderLayout.EAST);
         northPanel.add(saveLoad, BorderLayout.WEST);
         add(northPanel, BorderLayout.NORTH);
-        add(westPanel, BorderLayout.WEST);
-        add(center, BorderLayout.CENTER);
-        add(southPanel, BorderLayout.SOUTH);
         setVisible(true);
     }
 
@@ -120,6 +121,9 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         center.showPanel(centerNr); // CenterPanel hat Methode, die Inhalt je nach centerNr tauscht
     }
 
+     CenterPanel getCenterPanel() {
+        return center;
+    }
     
     void setCenter(int i) {
         this.centerNr = i;

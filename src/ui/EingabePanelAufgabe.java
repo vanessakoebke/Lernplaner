@@ -17,7 +17,7 @@ import service.Control;
 import service.Kalender;
 import util.CalendarFormatter;
 
-public class EingabePanel extends JPanel implements IAnsicht {
+public class EingabePanelAufgabe extends JPanel implements IAnsicht {
     private boolean neueingabe = false;
     private Aufgabe aufgabe;
     private JComboBox<Modul> modulFeld;
@@ -35,7 +35,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
     private Control control;
 
     // Konstruktor für neue Aufgabe
-    public EingabePanel(Control control) {
+    public EingabePanelAufgabe(Control control) {
         this.control = control;
         this.aufgabe = null;
         this.neueingabe = true;
@@ -43,7 +43,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
     }
 
     // Konstruktor zum Bearbeiten bestehender Aufgabe
-    public EingabePanel(Aufgabe aufgabe, Control control) {
+    public EingabePanelAufgabe(Aufgabe aufgabe, Control control) {
         this.control = control;
         this.aufgabe = aufgabe;
         this.neueingabe = false;
@@ -62,6 +62,11 @@ public class EingabePanel extends JPanel implements IAnsicht {
         // Modul
         JLabel modulLabel = new JLabel(I18n.t("model.Aufgabentyp.Modul"));
         modulFeld = new JComboBox<>(control.getMm().getAktuelleModule().toArray(new Modul[0]));
+        modulFeld.addItem(null);
+        modulFeld.setSelectedItem(null);
+        if (!neueingabe) {
+            modulFeld.setEnabled(false);
+        }
         gbc.gridx = 0;
         gbc.gridy = 0;
         this.add(modulLabel, gbc);
@@ -70,6 +75,7 @@ public class EingabePanel extends JPanel implements IAnsicht {
         // Aufgabentyp
         JLabel aufgabentypLabel = new JLabel(I18n.t("model.Aufgabentyp.Typ"));
         aufgabentypFeld = new JComboBox<>(Aufgabentyp.values());
+        aufgabentypFeld.removeItem(Aufgabentyp.LG);
         gbc.gridx = 0;
         gbc.gridy = 1;
         this.add(aufgabentypLabel, gbc);
