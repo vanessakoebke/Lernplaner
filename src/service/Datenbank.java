@@ -10,8 +10,13 @@ import java.util.*;
 
 import model.*;
 
-public class DatenbankService {
+public class Datenbank {
     private static final String DB_URL = "jdbc:sqlite:data/Lernplaner.db";
+    private Control control;
+    
+    public Datenbank(Control control) {
+        this.control = control;
+    }
 
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(DB_URL);
@@ -390,17 +395,18 @@ public class DatenbankService {
     public void upsertLg(Lerngruppe lg) {
         boolean neu = lg.getId() == null;
 
-        String sqlInsert = "INSERT INTO lerngruppe (modulId, titel, wochentag, uhrzeit, wiederholung) VALUES (?, ?, ?, ?, ?)";
+        String sqlInsert = "INSERT INTO lerngruppe (modulId, titel, wochentag, uhrzeit, ende) VALUES (?, ?, ?, ?, ?)";
         String sqlUpdate = "UPDATE lerngruppe SET modulId=?, titel=?, wochentag=?, uhrzeit=?, ende=? WHERE id=?";
 
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(neu ? sqlInsert : sqlUpdate, Statement.RETURN_GENERATED_KEYS)) {
 
+            // --- Lerngruppe speichern ---
             pstmt.setInt(1, lg.getModul() != null ? lg.getModul().getId() : Types.NULL);
             pstmt.setString(2, lg.getTitel());
             pstmt.setInt(3, lg.getWochentag().getValue());
             pstmt.setString(4, lg.getUhrzeit() != null ? lg.getUhrzeit().toString() : null);
-            pstmt.setString(5, lg.getEnde()  != null ? lg.getEnde().toString() : null);
+            pstmt.setString(5, lg.getEnde() != null ? lg.getEnde().toString() : null);
 
             if (!neu) {
                 pstmt.setInt(6, lg.getId());
@@ -416,13 +422,23 @@ public class DatenbankService {
                 }
             }
 
-            // Termine ebenfalls speichern
+            // --- Erst die Aufgaben speichern! ---
+            if (lg.getTermine() != null) {
+                for (Lerngruppe.Termin t : lg.getTermine()) {
+                    if (t.getAufgabe() != null && t.getAufgabe().getId() == null) {
+                        upsertAufgabe(t.getAufgabe()); // <-- hier
+                    }
+                }
+            }
+
+            // --- Dann die Termine speichern ---
             upsertTermine(lg);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     private void upsertTermine(Lerngruppe lg) {
         if (lg.getTermine() == null) return;
@@ -435,10 +451,29 @@ public class DatenbankService {
                 pstmt.setInt(1, lg.getId());
                 pstmt.setString(2, t.getDatum().toString());
                 pstmt.setString(3, t.getUhrzeitTermin() != null ? t.getUhrzeitTermin().toString() : null);
-                if (t.getAufgabe() != null && t.getAufgabe().getId() != null)
+
+                // Aufgabe prüfen und ggf. als AufgabeLerngruppe anlegen
+                Aufgabe aufgabe = t.getAufgabe();
+                if (aufgabe != null && aufgabe.getId() == null) {
+                    AufgabeLerngruppe lgAufgabe = new AufgabeLerngruppe(
+                            aufgabe.getTitel(),
+                            aufgabe.getBeschreibung(),
+                            aufgabe.getEnde(),
+                            aufgabe.getStart(),
+                            aufgabe.getStatus(),
+                            aufgabe.getModul(), null
+                    );
+                    upsertAufgabe(lgAufgabe); // In DB speichern, damit ID gesetzt wird
+                    t.setAufgabe(lgAufgabe);
+                }
+
+                // ID der Aufgabe in DB speichern
+                if (t.getAufgabe() != null && t.getAufgabe().getId() != null) {
                     pstmt.setInt(4, t.getAufgabe().getId());
-                else
+                } else {
                     pstmt.setNull(4, Types.INTEGER);
+                }
+
                 pstmt.addBatch();
             }
 
@@ -447,33 +482,31 @@ public class DatenbankService {
             e.printStackTrace();
         }
     }
+
     
-    public List<Lerngruppe> getLerngruppen(Modul modul) {
+    public List<Lerngruppe> getLerngruppen() {
         List<Lerngruppe> lerngruppen = new ArrayList<>();
 
-        String sql = "SELECT id, titel, wochentag, uhrzeit, wiederholung FROM lerngruppe WHERE modulId = ?";
+        String sql = "SELECT id, titel, wochentag, uhrzeit, ende, modulId FROM lerngruppe";
 
         try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-            pstmt.setInt(1, modul.getId());
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String titel = rs.getString("titel");
+                DayOfWeek wochentag = DayOfWeek.of(rs.getInt("wochentag"));
+                LocalTime uhrzeit = rs.getString("uhrzeit") != null ? LocalTime.parse(rs.getString("uhrzeit")) : null;
+                LocalDate ende = rs.getString("ende") != null ? LocalDate.parse(rs.getString("ende")) : null;
+                int modulId = rs.getInt("modulId");
+                Modul modul = !rs.wasNull() ? getModul(modulId) : null;
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String titel = rs.getString("titel");
-                    DayOfWeek wochentag = DayOfWeek.of(rs.getInt("wochentag"));
-                    LocalTime uhrzeit = rs.getString("uhrzeit") != null ? LocalTime.parse(rs.getString("uhrzeit")) : null;
-                    LocalDate ende = rs.getString("ende") != null
-                            ? LocalDate.parse(rs.getString("ende"))
-                            : null;
+                Lerngruppe lg = new Lerngruppe(modul, titel, wochentag, uhrzeit, ende);
+                lg.setId(id);
+                lg.setTermine(getTermine(lg));
 
-                    Lerngruppe lg = new Lerngruppe(modul, titel, wochentag, uhrzeit, ende);
-                    lg.setId(id);
-                    lg.setTermine(getTermine(lg)); // Termine laden
-
-                    lerngruppen.add(lg);
-                }
+                lerngruppen.add(lg);
             }
 
         } catch (SQLException e) {
@@ -482,6 +515,7 @@ public class DatenbankService {
 
         return lerngruppen;
     }
+
     
     public void removeLerngruppe(Lerngruppe lg) {
         if (lg.getId() == null) return; // Lerngruppe existiert nicht in DB
@@ -547,7 +581,6 @@ public class DatenbankService {
                             aufgabe = (AufgabeLerngruppe) a;
                         }
                     }
-
                     Lerngruppe.Termin t = lg.new Termin(datum, aufgabe);
                     t.setUhrzeitTermin(uhrzeit);
                     termine.add(t);

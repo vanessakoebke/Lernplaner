@@ -74,7 +74,7 @@ public class NavigationPanel extends JPanel {
         buttonLerngruppe.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buttonLerngruppe.setFont(FALoader.loadFontAwesome().deriveFont(28f));
         buttonLerngruppe.addActionListener(e -> {
-            //TODO
+            hf.setCenter(4);
         });
         this.add(buttonLerngruppe, gbc);
         ++gbc.gridy;
@@ -88,6 +88,19 @@ public class NavigationPanel extends JPanel {
             hf.setCenter(3);
         });
         this.add(buttonFortschritt, gbc);
+        ++gbc.gridy;
+        setPreferredSize(new java.awt.Dimension(80, 0));
+        setVisible(true);
+        
+        // Pokale-Button
+        JButton buttonPokale = new JButton("\uf091");
+        buttonPokale.setPreferredSize(new java.awt.Dimension(45, 45));
+        buttonPokale.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        buttonPokale.setFont(FALoader.loadFontAwesome().deriveFont(28f));
+        buttonPokale.addActionListener(e -> {
+            
+        });
+        this.add(buttonPokale, gbc);
         setPreferredSize(new java.awt.Dimension(80, 0));
         setVisible(true);
     }

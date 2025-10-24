@@ -10,21 +10,22 @@ public class Control {
     private ModulManager mm;
     private Einstellungen einstellungen;
     private Persistenz persistenz;
-    private DatenbankService db;
+    private Datenbank db;
     private LGManager lm;
     
     public Control() {
         new File("data").mkdirs();
-        this.db = new DatenbankService();
+        this.db = new Datenbank(this);
         db.init();
-        this.persistenz =  new Persistenz();
+        this.persistenz =  new Persistenz(this);
         this.am = new AufgabenManager(persistenz.aufgabenLaden(), this);
         this.mm = persistenz.moduleLaden();
+        this.lm = new LGManager(this, db.getLerngruppen());
         this.einstellungen = persistenz.einstellungenLaden();
         I18n.load(einstellungen.getSprachcode());
     }
     
-    public DatenbankService getDb() {
+    public Datenbank getDb() {
         return db;
     }
 

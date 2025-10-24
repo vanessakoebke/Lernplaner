@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import lang.I18n;
 import model.Lerngruppe;
+import model.Lerngruppe.Termin;
 import service.Control;
 import ui.buttons.CancelButton;
 
@@ -14,7 +15,7 @@ public class NeueLerngruppe extends JFrame{
     private EingabePanelLg eingabePanel;
     
     public NeueLerngruppe(CenterPanel center, Control control) {
-        super(I18n.t("ui.Lerngruppe.FensterTitel"));
+        super(I18n.t("ui.Lerngruppe.Fenstertitel"));
         this.center = center;
         
         //EingabePanel
@@ -27,17 +28,21 @@ public class NeueLerngruppe extends JFrame{
         buttonHinzu.addActionListener(e -> {
             Lerngruppe lg = eingabePanel.getLg();
             
-            // 1. In den globalen AufgabenManager speichern
+            // 1. In den globalen LerngruppenManager speichern
             control.getLm().addLg(lg);
+            
+            //2. Aufgaben in Aufgabenmanager speichern
+            for (Termin t: lg.getTermine()) {
+                control.getAm().addAufgabe(t.getAufgabe());
+            }
 
-            // 2. In die Datenbank speichern
+            // 3. In die Datenbank speichern
             if (lg.getId() == null) {
                 control.getDb().upsertLg(lg);
             }
 
-            // 3. TableModel refreshen
-            center.refresh(); // fireTableDataChanged() wird intern aufgerufen  
-
+            // 4. TableModel refreshen
+            center.refresh(); 
             this.dispose();
         });
 

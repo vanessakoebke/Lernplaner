@@ -49,7 +49,9 @@
 	"Lerngruppe": {
 		"Fenstertitel": "Neue Lerngruppe",
 		"LG": "Lerngruppe",
-		"LG_abr": "LG"
+		"LG_abr": "LG",
+		"NextTermin": "Nächster Termin",
+		"Todo": "To do:"
 	},
     "EingabePanel": {
       "Datumsformat": "TT.MM.JJJJ"

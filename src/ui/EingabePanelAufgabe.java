@@ -75,7 +75,6 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
         // Aufgabentyp
         JLabel aufgabentypLabel = new JLabel(I18n.t("model.Aufgabentyp.Typ"));
         aufgabentypFeld = new JComboBox<>(Aufgabentyp.values());
-        aufgabentypFeld.removeItem(Aufgabentyp.LG);
         gbc.gridx = 0;
         gbc.gridy = 1;
         this.add(aufgabentypLabel, gbc);
@@ -83,6 +82,9 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
         this.add(aufgabentypFeld, gbc);
         if (!neueingabe) {
             aufgabentypFeld.setEnabled(false);
+        }
+        if (neueingabe) {
+            aufgabentypFeld.removeItem(Aufgabentyp.LG);
         }
         // Titel
         JLabel titelLabel = new JLabel(I18n.t("ui.Common.Aufgabenname"));
@@ -182,6 +184,9 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
             einheitenFeld.setVisible(sichtbar);
             einheitenDropdown.setVisible(sichtbar);
         });
+
+
+        
         // Ergebnis für EA und Altklausur
         JLabel ergebnisLabel = new JLabel(I18n.t("model.Ergebnis"));
         ergebnisFeld = new JTextField();
@@ -204,12 +209,10 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
         this.add(folgeLabel, gbc);
         gbc.gridx = 1;
         this.add(folgeAufgabenDropdown, gbc);
-        
-        //Action-Listener
-        modulFeld.addActionListener(e-> {
+        // Action-Listener
+        modulFeld.addActionListener(e -> {
             refreshFolgeAufgaben();
         });
-        
         aufgabentypFeld.addActionListener(e -> {
             Status status = (Status) statusFeld.getSelectedItem();
             Aufgabentyp typ = (Aufgabentyp) aufgabentypFeld.getSelectedItem();
@@ -245,11 +248,10 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
         });
         statusFeld.addActionListener(e -> {
             Status neuerStatus = (Status) statusFeld.getSelectedItem();
-            control.getAm().statusAendern(aufgabe, neuerStatus);
+            if (aufgabe != null) {
+                control.getAm().statusAendern(aufgabe, neuerStatus);
+            }
         });
-
-        
-        
     }
 
     public Aufgabe getAufgabe() {
@@ -269,7 +271,8 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
                             I18n.t("Common.Errors.Warnung"), JOptionPane.WARNING_MESSAGE);
                 }
                 return new AufgabeDurcharbeiten(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
-                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), seiten, (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
+                        (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), seiten,
+                        (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
             case EA:
                 return new AufgabeEA(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
                         (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(),
@@ -289,7 +292,8 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
                 }
                 return new AufgabeWiederholen(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
                         (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem(), einheiten,
-                        (Lerneinheit) einheitenDropdown.getSelectedItem(), (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
+                        (Lerneinheit) einheitenDropdown.getSelectedItem(),
+                        (Aufgabe) folgeAufgabenDropdown.getSelectedItem());
             default:
                 return new AufgabeAllgemein(titelFeld.getText(), beschreibungFeld.getText(), ende, start,
                         (Status) statusFeld.getSelectedItem(), (Modul) modulFeld.getSelectedItem());
@@ -374,33 +378,27 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
         if (folgeAufgabenDropdown == null) {
             folgeAufgabenDropdown = new JComboBox<>();
         }
-
         Modul modul = (Modul) modulFeld.getSelectedItem();
         DefaultComboBoxModel<Aufgabe> model = new DefaultComboBoxModel<>();
         model.addElement(null); // "Keine" Auswahl immer oben
-
         if (modul != null) {
             java.util.List<Aufgabe> folgeaufgaben = new ArrayList<>();
             for (Aufgabe a : control.getAm().getAufgabenListe(modul)) {
-                    folgeaufgaben.add(a);
+                folgeaufgaben.add(a);
             }
-
             // Optional: alphabetisch nach Titel sortieren
             folgeaufgaben.sort((a1, a2) -> a1.getTitel().compareToIgnoreCase(a2.getTitel()));
-
             for (Aufgabe a : folgeaufgaben) {
                 model.addElement(a);
             }
         }
-
         folgeAufgabenDropdown.setModel(model);
-
         // Renderer setzen, um nur den Titel anzuzeigen
         folgeAufgabenDropdown.setRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
                 if (value == null) {
                     setText(I18n.t("ui.Common.Keine"));
                 } else if (value instanceof Aufgabe a) {
@@ -415,7 +413,6 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
             folgeAufgabenDropdown.setSelectedIndex(0); // "Keine" als Standard
         }
     }
-
 
     @Override
     public void refresh() {

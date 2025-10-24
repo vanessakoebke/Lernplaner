@@ -67,7 +67,7 @@ import util.CalendarFormatter;
             
             // Titel
             JLabel titelLabel = new JLabel(I18n.t("ui.Common.Name"));
-            titelFeld = new JTextField(I18n.t("ui.Lerngruppe.LG_abr") + ((Modul) modulFeld.getSelectedItem()).getName());
+            titelFeld = new JTextField(I18n.t("ui.Lerngruppe.LG_abr") + " " + ((Modul) modulFeld.getSelectedItem()).getName());
             titelFeld.setPreferredSize(new Dimension(200, 25));
             titelFeld.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
             gbc.gridx = 0;
@@ -80,7 +80,7 @@ import util.CalendarFormatter;
             JLabel wochentagLabel = new JLabel(I18n.t("ui.Common.Wochentag"));
             wochentagFeld = new JComboBox<>(DayOfWeek.values());
             gbc.gridx = 0;
-            gbc.gridy = 12;
+            gbc.gridy = 11;
             this.add(wochentagLabel, gbc);
             gbc.gridx = 1;
             this.add(wochentagFeld, gbc);
@@ -111,7 +111,7 @@ import util.CalendarFormatter;
             
             //Action-Listener
             modulFeld.addActionListener(e->{
-                titelFeld.setText(I18n.t("ui.Lerngruppe.LG_abr") + ((Modul) modulFeld.getSelectedItem()).getName());
+                titelFeld.setText(I18n.t("ui.Lerngruppe.LG_abr") + " " + ((Modul) modulFeld.getSelectedItem()).getName());
                 endeModel.setDate(((Modul) modulFeld.getSelectedItem()).getKlausurTermin().getYear(), ((Modul) modulFeld.getSelectedItem()).getKlausurTermin().getMonthValue() -1, ((Modul) modulFeld.getSelectedItem()).getKlausurTermin().getDayOfMonth());
                 endeModel.setSelected(true);
             });

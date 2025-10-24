@@ -10,7 +10,7 @@ import javax.swing.*;
 import model.*;
 import service.Control;
 
-public class Fortschritt extends JPanel implements IAnsicht {
+public class FortschrittAnsicht extends JPanel implements IAnsicht {
     private Control control;
     private final List<ModulProgress> moduleData = new ArrayList<>();
 
@@ -30,7 +30,7 @@ public class Fortschritt extends JPanel implements IAnsicht {
         }
     }
 
-    public Fortschritt(Control control) {
+    public FortschrittAnsicht(Control control) {
         this.control = control;
         setOpaque(false); // Panel transparent
 
@@ -112,6 +112,8 @@ public class Fortschritt extends JPanel implements IAnsicht {
     private int getProzent(Modul modul) {
         List<Aufgabe> liste = control.getAm().getAufgabenListe(modul);
         if (liste.isEmpty()) return 0;
+
+        liste.removeIf(a -> a instanceof AufgabeLerngruppe);
 
         long erledigt = liste.stream()
                 .filter(a -> a != null && a.getStatus() == Status.ERLEDIGT)

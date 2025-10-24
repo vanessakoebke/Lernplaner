@@ -10,10 +10,10 @@ import model.Modul;
 
 public class ModulManager implements Serializable {   
     private List<Modul> modulliste;    
-    private DatenbankService db;
+    private Datenbank db;
 
 
-    public ModulManager(DatenbankService db) {
+    public ModulManager(Datenbank db) {
         this.db = db;
         modulliste = new ArrayList<>();
     }

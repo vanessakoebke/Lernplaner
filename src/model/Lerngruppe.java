@@ -1,8 +1,8 @@
 package model;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 
 import lang.I18n;
 
@@ -36,7 +36,7 @@ public class Lerngruppe {
     private void berechneTermine() {
         entferneZukuenftige();
         LocalDate start = LocalDate.now();
-        LocalDate datumLG = start;
+        LocalDate datumLG = LocalDate.now().with(TemporalAdjusters.nextOrSame(wochentag));
         while (!datumLG.isAfter(ende)) {
             termine.add(new Termin(datumLG, new AufgabeLerngruppe(I18n.t("model.Aufgabentyp.LG"), "", datumLG, start,
                     Status.NEU, modul, null)));
@@ -109,6 +109,14 @@ public class Lerngruppe {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+    
+    public Termin getNaechstenTermin() {
+        
+        return termine.stream()
+                .filter(t -> t.getDatum() != null && !t.getDatum().isBefore(LocalDate.now())) // nur Termine ab heute
+                .min(Comparator.comparing(Termin::getDatum)) // der kleinste (früheste) Termin
+                .orElse(null); // wenn kein zukünftiger Termin existiert
     }
     
     public class Termin {

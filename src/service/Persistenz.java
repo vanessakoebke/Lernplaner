@@ -18,8 +18,10 @@ import util.RuntimeTypeAdapterFactory;
 public class Persistenz {
     private static final String DATEI_NAME_EINSTELLUNGEN = "data/settings.json";
     private Gson gson;
+    private Control control;
 
-    public Persistenz() {
+    public Persistenz(Control control) {
+        this.control = control;
         gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
             .setPrettyPrinting()
@@ -29,17 +31,14 @@ public class Persistenz {
 
     // Speichern
     public void speichern(List<Aufgabe> aufgaben) {
-        DatenbankService db = new DatenbankService();
-        db.init();
         for (Aufgabe a : aufgaben) {
-            db.upsertAufgabe(a);
+            control.getDb().upsertAufgabe(a);
         }
     }
 
     public void speichern(ModulManager modulManager) {
-        DatenbankService db = new DatenbankService();
         for (Modul modul : modulManager.getAlleModule()) {
-            db.upsertModul(modul);
+            control.getDb().upsertModul(modul);
         }
     }
 
@@ -61,18 +60,14 @@ public class Persistenz {
 
 
     public List<Aufgabe> aufgabenLaden() {
-        DatenbankService db = new DatenbankService();
-        db.init();
-        return db.getAufgaben();
+        return control.getDb().getAufgaben();
     }
 
 
     public ModulManager moduleLaden() {
-        DatenbankService db = new DatenbankService();
-        db.init();
-        ModulManager modulManager = new ModulManager(db);
+        ModulManager modulManager = new ModulManager(control.getDb());
         
-        List<Modul> module = db.getModule(); // holt alles aus der DB
+        List<Modul> module = control.getDb().getModule(); // holt alles aus der DB
         for (Modul modul : module) {
             modulManager.addModul(modul);
         }
@@ -92,4 +87,7 @@ public class Persistenz {
         einstellungen.initDatumsformat(); // falls du diese Methode in Einstellungen anlegst
         return einstellungen;
     }
+
+
+
 }

@@ -28,7 +28,7 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         
         //Button Fortschritt anzeigen
         JButton buttonFortschritt = new JButton(I18n.t("ui.Fortschritt.FortschrittAnzeigen"));
-        buttonFortschritt.addActionListener(e -> new Fortschritt(control));        
+        buttonFortschritt.addActionListener(e -> new FortschrittAnsicht(control));        
         // Button Einstellungen
         JButton buttonEinstellungen = new JButton("\uf013");
         buttonEinstellungen.setPreferredSize(new java.awt.Dimension(25, 25));
@@ -119,6 +119,8 @@ public class Hauptfenster extends JFrame implements IAnsicht {
     @Override
     public void refresh() {
         center.showPanel(centerNr); // CenterPanel hat Methode, die Inhalt je nach centerNr tauscht
+        south.showPanel(centerNr);
+        south.refresh();
     }
 
      CenterPanel getCenterPanel() {

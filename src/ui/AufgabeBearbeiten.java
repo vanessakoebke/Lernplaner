@@ -38,4 +38,27 @@ public class AufgabeBearbeiten extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
+    
+    AufgabeBearbeiten(Aufgabe aufgabe, Control control) {
+        super(I18n.t("ui.AufgabeBearbeiten.FensterTitel"));
+        this.eingabePanel = new EingabePanelAufgabe(aufgabe, control);
+        // Buttons
+        JButton buttonAbbrechen = new CancelButton();
+        JButton buttonOk = new JButton(I18n.t("Common.ButtonOk"));
+        buttonOk.addActionListener(e -> {
+            Aufgabe neu = eingabePanel.getAufgabe();
+           control.getAm().updateAufgabe(neu, aufgabe.getId()); 
+            this.dispose();
+        });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(buttonOk);
+        buttonPanel.add(buttonAbbrechen);
+        // Layout
+        add(eingabePanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(500, 600);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
 }
