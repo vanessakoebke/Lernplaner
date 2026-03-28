@@ -34,6 +34,7 @@ public class NeueLerngruppe extends JFrame{
             //2. Aufgaben in Aufgabenmanager speichern
             for (Termin t: lg.getTermine()) {
                 control.getAm().addAufgabe(t.getAufgabe());
+                control.getDb().upsertAufgabe(t.getAufgabe());
             }
 
             // 3. In die Datenbank speichern

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import lang.I18n;
 import model.*;
 import service.Control;
 
@@ -102,9 +103,13 @@ public class FortschrittAnsicht extends JPanel implements IAnsicht {
     @Override
     public void refresh() {
         moduleData.clear();
+        int i = control.getMm().getAktuelleModule().size();
+        int sum = 0;
         for (Modul modul : control.getMm().getAktuelleModule()) {
             moduleData.add(new ModulProgress(modul.getName(), getProzent(modul)));
+            sum += getProzent(modul);
         }
+        moduleData.add(new ModulProgress(I18n.t("Common.Gesamt"), sum /i));
         revalidate();
         repaint();
     }
@@ -114,11 +119,21 @@ public class FortschrittAnsicht extends JPanel implements IAnsicht {
         if (liste.isEmpty()) return 0;
 
         liste.removeIf(a -> a instanceof AufgabeLerngruppe);
+        liste.removeIf(a -> a instanceof AufgabeWiederholen);
+        liste.removeIf(a -> a instanceof AufgabeAltklausur);
 
         long erledigt = liste.stream()
                 .filter(a -> a != null && a.getStatus() == Status.ERLEDIGT)
                 .count();
+        
+        long angefangen = liste.stream()
+                .filter(a -> a != null && a.getStatus() == Status.ANGEFANGEN)
+                .count();
+        
+        long wartend = liste.stream()
+                .filter(a -> a != null && a.getStatus() == Status.WARTEND)
+                .count();
 
-        return (int) ((erledigt * 100.0) / liste.size());
+        return (int) (((erledigt + angefangen * 0.5 + wartend * 0.75) * 100.0) / liste.size());
     }
 }

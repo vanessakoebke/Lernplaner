@@ -73,7 +73,7 @@ public class Hauptfenster extends JFrame implements IAnsicht {
         });
         
         // Hauptfenster
-        setSize(900, 600);
+        setSize(1100, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         addWindowListener(new WindowAdapter() {

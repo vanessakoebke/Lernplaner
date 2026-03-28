@@ -89,6 +89,11 @@ public class Datenbank {
     public void upsertAufgabe(Aufgabe aufgabe) {
         boolean neu = aufgabe.getId() == null;
 
+        // Modul sichern
+        if (aufgabe.getModul() != null && aufgabe.getModul().getId() == null) {
+            upsertModul(aufgabe.getModul());
+        }
+
         String sqlInsert = "INSERT INTO aufgabe " +
                 "(typ, titel, beschreibung, start, ende, status, modulId, seiten, ergebnis, einheiten, einheitstyp, folgeaufgabe_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -105,8 +110,15 @@ public class Datenbank {
             pstmt.setString(idx++, aufgabe.getStart() != null ? aufgabe.getStart().toString() : null);
             pstmt.setString(idx++, aufgabe.getEnde() != null ? aufgabe.getEnde().toString() : null);
             pstmt.setInt(idx++, aufgabe.getStatusIndex());
-            pstmt.setInt(idx++, aufgabe.getModul() != null && aufgabe.getModul().getId() != null ? aufgabe.getModul().getId() : null);
 
+            // ModulId sicher setzen
+            if (aufgabe.getModul() != null && aufgabe.getModul().getId() != null) {
+                pstmt.setInt(idx++, aufgabe.getModul().getId());
+            } else {
+                pstmt.setNull(idx++, Types.INTEGER);
+            }
+
+            // Spezialisierte Felder
             if (aufgabe instanceof AufgabeDurcharbeiten)
                 pstmt.setInt(idx++, ((AufgabeDurcharbeiten) aufgabe).getSeiten());
             else
@@ -127,20 +139,24 @@ public class Datenbank {
                 pstmt.setNull(idx++, Types.VARCHAR);
             }
 
-            // ✅ Folgeaufgabe richtig speichern
-            if (aufgabe.getFolgeAufgabe() != null && aufgabe.getFolgeAufgabe().getId() != null)
+            // Folgeaufgabe
+            if (aufgabe.getFolgeAufgabe() != null) {
+                if (aufgabe.getFolgeAufgabe().getId() == null) {
+                    upsertAufgabe(aufgabe.getFolgeAufgabe()); // sicherstellen, dass ID existiert
+                }
                 pstmt.setInt(idx++, aufgabe.getFolgeAufgabe().getId());
-            else
+            } else {
                 pstmt.setNull(idx++, Types.INTEGER);
+            }
 
-            // WHERE id nur bei UPDATE
+            // WHERE id nur bei Update
             if (!neu) {
                 pstmt.setInt(idx++, aufgabe.getId());
             }
 
             pstmt.executeUpdate();
 
-            // generierte ID auslesen bei neuem Insert
+            // generierte ID auslesen bei Insert
             if (neu) {
                 try (ResultSet keys = pstmt.getGeneratedKeys()) {
                     if (keys.next()) {
@@ -153,7 +169,6 @@ public class Datenbank {
             e.printStackTrace();
         }
     }
-
 
     public void deleteAufgabe(Aufgabe aufgabe) {
         if (aufgabe.getId() == null) {

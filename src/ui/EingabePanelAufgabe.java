@@ -338,7 +338,7 @@ public class EingabePanelAufgabe extends JPanel implements IAnsicht {
         Modul aufgabenModul = aufgabe.getModul();
         for (int i = 0; i < modulFeld.getItemCount(); i++) {
             Modul m = modulFeld.getItemAt(i);
-            if (m.getId() == aufgabenModul.getId()) { // falls du IDs hast
+            if (m!= null && m.getId().equals(aufgabenModul.getId())) { // falls du IDs hast
                 modulFeld.setSelectedIndex(i);
                 break;
             }

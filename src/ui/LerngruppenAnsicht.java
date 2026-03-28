@@ -161,7 +161,6 @@ public class LerngruppenAnsicht extends JPanel implements IAnsicht {
             gbc.weightx = 1;
             gbc.fill = GridBagConstraints.EAST;
             aufgabe.setEditable(false);
-            updateAufgabeText((Lerngruppe.Termin) terminDropdown.getSelectedItem());
             add(aufgabe, gbc);
             
          // Bearbeiten-Button rechts 
@@ -191,6 +190,8 @@ public class LerngruppenAnsicht extends JPanel implements IAnsicht {
             if (naechster != null) {
                 terminDropdown.setSelectedItem(naechster);
             }
+            updateAufgabeText((Lerngruppe.Termin) terminDropdown.getSelectedItem());
+
 
             // Listener für Dropdown → Aufgabe aktualisieren
             terminDropdown.addActionListener(e -> {
